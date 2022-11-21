@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="3bd4719a-2029-4988-b5d5-b543fe7566f3" name="변경" comment="design pattern" />
+    <list default="true" id="3bd4719a-2029-4988-b5d5-b543fe7566f3" name="변경" comment="design pattern">
+      <change afterPath="$PROJECT_DIR$/../spring/spring-ioc/src/main/java/com/example/springioc/ioc/ApplicationContextProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../spring/spring-ioc/src/main/java/com/example/springioc/ioc/Base64Encoder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../spring/spring-ioc/src/main/java/com/example/springioc/ioc/Encoder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../spring/spring-ioc/src/main/java/com/example/springioc/ioc/UrlEncoder.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -35,21 +41,21 @@
   <component name="ProjectViewState">
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "WebServerToolWindowFactoryState": "false",
-    "last_opened_file_path": "C:/Git/cs_diary/notion_java",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "project.structure.last.edited": "모듈",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.2",
-    "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Git/cs_diary/notion_java&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;모듈&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="애플리케이션.baekjoon.B2583">
     <configuration name="B2583" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="test.B2583" />
@@ -157,7 +163,9 @@
       <workItem from="1666995438676" duration="6774000" />
       <workItem from="1667802251497" duration="4908000" />
       <workItem from="1667830241787" duration="331000" />
-      <workItem from="1667831251735" duration="2258000" />
+      <workItem from="1667831251735" duration="2854000" />
+      <workItem from="1668505540554" duration="1298000" />
+      <workItem from="1669049938437" duration="653000" />
     </task>
     <task id="LOCAL-00001" summary="design pattern">
       <created>1667831369255</created>
