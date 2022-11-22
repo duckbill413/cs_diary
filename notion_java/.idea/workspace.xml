@@ -5,10 +5,12 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3bd4719a-2029-4988-b5d5-b543fe7566f3" name="변경" comment="design pattern">
-      <change afterPath="$PROJECT_DIR$/../spring/spring-ioc/src/main/java/com/example/springioc/ioc/ApplicationContextProvider.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../spring/spring-ioc/src/main/java/com/example/springioc/ioc/Base64Encoder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../spring/spring-ioc/src/main/java/com/example/springioc/ioc/Encoder.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/../spring/spring-ioc/src/main/java/com/example/springioc/ioc/UrlEncoder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/deque/JavaDeque.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/priority_queue/Book.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/priority_queue/JavaPriorityQueue.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/sorting/Main.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/sorting/Student.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -24,6 +26,7 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -56,13 +59,13 @@
     &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;
   }
 }</component>
-  <component name="RunManager" selected="애플리케이션.baekjoon.B2583">
-    <configuration name="B2583" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="test.B2583" />
+  <component name="RunManager" selected="애플리케이션.JavaPriorityQueue">
+    <configuration name="JavaDeque" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="deque.JavaDeque" />
       <module name="notion_java.main" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="test.*" />
+          <option name="PATTERN" value="deque.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -70,12 +73,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Factory_Pattern" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="design_pattern.Factory_Pattern" />
+    <configuration name="JavaPriorityQueue" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="priority_queue.JavaPriorityQueue" />
       <module name="notion_java.main" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="design_pattern.*" />
+          <option name="PATTERN" value="priority_queue.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -96,19 +99,6 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="Strategy_Pattern" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="design_pattern.Strategy_Pattern" />
-      <module name="notion_java.main" />
-      <extension name="coverage">
-        <pattern>
-          <option name="PATTERN" value="design_pattern.*" />
-          <option name="ENABLED" value="true" />
-        </pattern>
-      </extension>
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
     <configuration name="baekjoon.B2583" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="baekjoon.B2583" />
       <module name="notion_java.main" />
@@ -128,6 +118,19 @@
       <extension name="coverage">
         <pattern>
           <option name="PATTERN" value="baekjoon.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="sorting.Main" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="sorting.Main" />
+      <module name="notion_java.main" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="sorting.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -136,18 +139,19 @@
       </method>
     </configuration>
     <list>
-      <item itemvalue="애플리케이션.B2583" />
+      <item itemvalue="애플리케이션.JavaPriorityQueue" />
+      <item itemvalue="애플리케이션.JavaDeque" />
+      <item itemvalue="애플리케이션.sorting.Main" />
       <item itemvalue="애플리케이션.baekjoon.B2583" />
       <item itemvalue="애플리케이션.Observer_Pattern" />
-      <item itemvalue="애플리케이션.Strategy_Pattern" />
-      <item itemvalue="애플리케이션.Factory_Pattern" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="애플리케이션.JavaPriorityQueue" />
+        <item itemvalue="애플리케이션.JavaDeque" />
+        <item itemvalue="애플리케이션.sorting.Main" />
         <item itemvalue="애플리케이션.baekjoon.B2583" />
         <item itemvalue="애플리케이션.Observer_Pattern" />
-        <item itemvalue="애플리케이션.Strategy_Pattern" />
-        <item itemvalue="애플리케이션.Factory_Pattern" />
       </list>
     </recent_temporary>
   </component>
@@ -166,6 +170,9 @@
       <workItem from="1667831251735" duration="2854000" />
       <workItem from="1668505540554" duration="1298000" />
       <workItem from="1669049938437" duration="653000" />
+      <workItem from="1669109726895" duration="8301000" />
+      <workItem from="1669125756499" duration="4859000" />
+      <workItem from="1669130743524" duration="4562000" />
     </task>
     <task id="LOCAL-00001" summary="design pattern">
       <created>1667831369255</created>
