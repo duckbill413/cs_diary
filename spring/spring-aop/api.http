@@ -1,0 +1,12 @@
+### AOP GET
+GET http://localhost:8888/api/get/100?name=duckbill
+
+### AOP POST
+POST http://localhost:8888/api/post
+Content-Type: application/json
+
+{
+  "id": 100,
+  "name": "duckbill",
+  "email": "mazingga102@naver.com"
+}
