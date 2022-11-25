@@ -10,3 +10,17 @@ Content-Type: application/json
   "name": "duckbill",
   "email": "mazingga102@naver.com"
 }
+
+### AOP DELETE
+DELETE http://localhost:8888/api/delete
+
+
+### AOP PUT
+PUT http://localhost:8888/api/put
+Content-Type: application/json
+
+{
+  "id": 100,
+  "name": "duckbill",
+  "email": "bWF6aW5nZ2ExMDI="
+}
