@@ -1,0 +1,72 @@
+### GET 1
+GET http://localhost:8888/api/hello
+
+### GET queryParams
+GET http://localhost:8888/api/get/query-param?name=steve&email=mazingga102@naver.com&age=20
+
+### GET queryParam02
+GET http://localhost:8888/api/get/query-param03?name=steve&email=mazingga102@naver.com&age=20
+
+### POST 1
+POST http://localhost:8888/api/post/post1
+Content-Type: application/json
+
+{
+  "account" : "user01",
+  "email" : "uhyeon7399@daum.net",
+  "address": "서울",
+  "password": "1234"
+}
+
+### POST 2
+POST http://localhost:8888/api/post/post2
+Content-Type: application/json
+
+{
+  "account" : "user01",
+  "email" : "uhyeon7399@daum.net",
+  "address": "서울",
+  "password": "1234",
+  "phone_number": "010-1234-1234"
+}
+
+### PUT 1
+PUT http://localhost:8888/api/put/put1
+Content-Type: application/json
+
+{
+  "name": "duckbill",
+  "age": 28,
+  "car_list": [
+    {
+      "name": "bmw",
+      "car_number": "b-12325"
+    },
+    {
+      "name": "audi",
+      "car_number": "a-12151"
+    }
+  ]
+}
+
+### PUT 2
+PUT http://localhost:8888/api/put/put2/3
+Content-Type: application/json
+
+{
+  "name": "duckbill",
+  "age": 28,
+  "car_list": [
+    {
+      "name": "bmw",
+      "car_number": "b-12325"
+    },
+    {
+      "name": "audi",
+      "car_number": "a-12151"
+    }
+  ]
+}
+
+### DELETE 1
+DELETE http://localhost:8888/api/delete/delete1/1?account=duckbill
