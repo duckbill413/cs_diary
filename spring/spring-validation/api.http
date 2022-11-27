@@ -1,0 +1,32 @@
+### /api/user
+POST http://localhost:8080/api/user
+Content-Type: application/json
+
+{
+  "name": "duckbill",
+  "age": 100,
+  "email": "abasdfaef",
+  "phone_number": "01031313155"
+}
+
+### /api/user/validation/response-entity
+POST http://localhost:8080/api/user/validation/response-entity
+Content-Type: application/json
+
+{
+  "name": "duckbill",
+  "age": 30,
+  "email": "uhyeon7399@daum.net",
+  "phone_number": "010-3232-2325"
+}
+
+### /api/user/validation/binding-result
+POST http://localhost:8080/api/user/validation/binding-result
+Content-Type: application/json
+
+{
+  "name": "duckbill",
+  "age": 30,
+  "email": "uhyeon7399daum.net",
+  "phone_number": "010-3121f2325"
+}
