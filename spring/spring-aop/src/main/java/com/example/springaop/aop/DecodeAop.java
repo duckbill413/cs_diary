@@ -15,9 +15,10 @@ import java.util.Base64;
 @Aspect
 @Component
 public class DecodeAop {
+    // MEMO: Controller 하위 메소드를 Pointcut 시점으로 지정
     @Pointcut("execution(* com.example.springaop.controller..*.*(..))")
     private void cut(){}
-
+    // MEMO: Decode Annotation을 Pointcut 시점으로 지정
     @Pointcut("@annotation(com.example.springaop.anotation.Decode)")
     private void enableDecode(){}
 
@@ -45,5 +46,4 @@ public class DecodeAop {
             System.out.println("after returning :" + user);
         }
     }
-
 }
