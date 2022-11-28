@@ -3,6 +3,7 @@ package com.example.springioc.ioc;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+//@Component
 public class Encoder {
     private IEncoder iEncoder;
 

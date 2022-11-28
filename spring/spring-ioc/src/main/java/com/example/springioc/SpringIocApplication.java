@@ -24,7 +24,7 @@ public class SpringIocApplication {
 //        Base64Encoder base64Encoder = context.getBean(Base64Encoder.class);
 //        UrlEncoder urlEncoder = context.getBean(UrlEncoder.class);
 //        Encoder encoder = new Encoder(base64Encoder);
-//        encoder.encode(msg);
+//        encoder.encode(msg); 
 
         Encoder encoder = context.getBean("base64Encode", Encoder.class);
         String url = "www.naver.com/books/it?page=1&size=123&name=duckbillLvr";
