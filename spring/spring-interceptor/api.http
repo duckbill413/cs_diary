@@ -1,0 +1,5 @@
+### GET Private False Query
+GET localhost:8080/api/private/hello?name=steve
+
+### GET Private Query
+GET localhost:8080/api/private/hello?name=duckbill
