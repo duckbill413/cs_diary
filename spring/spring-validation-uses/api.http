@@ -1,0 +1,14 @@
+### GET Validation Check - ConstraintViolationException
+GET http://localhost:8080/api?name=&age=0
+
+### GET Validation Check - MissingServletRequestParameterException
+GET http://localhost:8080/api?name=&age=
+
+### POST MethodArgumentNotValidException
+POST http://localhost:8080/api
+Content-Type: application/json
+
+{
+  "name": "",
+  "age": 0
+}
