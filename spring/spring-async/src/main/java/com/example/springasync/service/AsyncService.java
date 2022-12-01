@@ -1,11 +1,10 @@
 package com.example.springasync.service;
 
-import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -14,7 +13,7 @@ import java.util.concurrent.ExecutionException;
 public class AsyncService {
 
     public String hello(){
-        for(int i=0; i<10; i++){
+        for(int i=0; i<5; i++){
             try {
                 log.info(String.valueOf(i+1));
                 Thread.sleep(2000);
@@ -24,14 +23,13 @@ public class AsyncService {
             }
         }
 
-        return "async hello";
+        return "async hello " + LocalDateTime.now();
     }
     @Async("async-thread")
-    public String run() throws ExecutionException, InterruptedException {
+    public CompletableFuture<String> run() throws ExecutionException, InterruptedException {
         log.info("now running");
         CompletableFuture<String> future = CompletableFuture.completedFuture(hello());
-        return future.get();
-
-//        return new AsyncResult(hello()).completable();
+        return future;
+//        return new AsyncResult(hello()).completable(); // Deprecated
     }
 }

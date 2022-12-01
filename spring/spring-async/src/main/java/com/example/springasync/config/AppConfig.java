@@ -18,7 +18,7 @@ public class AppConfig {
         threadPoolTaskExecutor.setCorePoolSize(10);
         threadPoolTaskExecutor.setQueueCapacity(10);
         threadPoolTaskExecutor.setThreadNamePrefix("Async-");
-
+        threadPoolTaskExecutor.initialize();
         return threadPoolTaskExecutor;
     }
 }

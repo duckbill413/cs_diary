@@ -3,11 +3,11 @@ package com.example.springasync.controller;
 import com.example.springasync.service.AsyncService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 @Slf4j
@@ -20,8 +20,8 @@ public class ApiController {
 
     @GetMapping("/hello")
     public String hello() throws ExecutionException, InterruptedException {
-        String hello = asyncService.run();
+        CompletableFuture<String> hello = asyncService.run();
         log.info("completable future init");
-        return hello;
+        return hello.get();
     }
 }
