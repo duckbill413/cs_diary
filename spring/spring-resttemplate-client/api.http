@@ -1,0 +1,14 @@
+### GET Server hello Object
+GET http://localhost:8080/api/client/hello/object
+
+### GET Server hello Entity
+GET http://localhost:8080/api/client/hello/entity
+
+### GET Server hello User Entity
+GET http://localhost:8080/api/client/hello/entity/user
+
+### GET Server hello User Entity
+GET http://localhost:8080/api/client/hello/entity/user/params
+
+### POST server userpost
+GET http://localhost:8080/api/client/hello/user/post
