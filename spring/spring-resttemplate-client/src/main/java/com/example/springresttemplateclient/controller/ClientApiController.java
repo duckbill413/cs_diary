@@ -1,5 +1,6 @@
 package com.example.springresttemplateclient.controller;
 
+import com.example.springresttemplateclient.dto.Req;
 import com.example.springresttemplateclient.dto.UserResponse;
 import com.example.springresttemplateclient.service.RestTemplateService;
 import lombok.RequiredArgsConstructor;
@@ -36,5 +37,15 @@ public class ClientApiController {
     @GetMapping("/hello/user/post")
     public UserResponse getUserPost(){
         return restTemplateService.userPost();
+    }
+
+    @GetMapping("/exchange")
+    public UserResponse getUserExchange(){
+        return restTemplateService.exchange();
+    }
+
+    @GetMapping("/exchange/generic")
+    public Req<UserResponse> getGenericExchange(){
+        return restTemplateService.genericExchange();
     }
 }

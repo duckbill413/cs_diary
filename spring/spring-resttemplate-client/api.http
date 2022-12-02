@@ -12,3 +12,9 @@ GET http://localhost:8080/api/client/hello/entity/user/params
 
 ### POST server userpost
 GET http://localhost:8080/api/client/hello/user/post
+
+### POST server userpost exchage
+GET http://localhost:8080/api/client/exchange
+
+### POST server userpost generic exchage
+GET http://localhost:8080/api/client/exchange/generic
