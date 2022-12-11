@@ -4,6 +4,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -21,4 +22,14 @@ public class Member {
     private String email;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    @OneToMany(fetch = FetchType.EAGER)
+    private List<Address> address;
+
+    public Member(Long id, String name, String email, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
 }
