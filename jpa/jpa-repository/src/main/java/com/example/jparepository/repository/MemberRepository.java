@@ -5,9 +5,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findByName(String name);
@@ -21,6 +24,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
     List<Member> findByNameStartingWith(String name);
     List<Member> findByNameEndingWith(String name);
     List<Member> findByNameLike(String name);
+    Optional<Member> findByEmail(String email);
 
     // FEAT: Order
     List<Member> findTop1ByName(String name);
@@ -30,4 +34,8 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     // FEAT: Paging
     Page<Member> findByName(String name, Pageable pageable);
+
+    // FEAT: Enum check
+    @Query(value = "select * from member limit 1;", nativeQuery = true)
+    Map<String, Object> findRawRecord();
 }

@@ -1,11 +1,13 @@
 package com.example.jparepository.repository;
 
+import com.example.jparepository.domain.Gender;
 import com.example.jparepository.domain.Member;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.*;
+import sun.util.resources.LocaleData;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -122,6 +124,14 @@ class MemberRepositoryTest {
         ));
 
     }
+    private Sort getSort(){
+        return Sort.by(
+                Sort.Order.desc("id"),
+                Sort.Order.asc("email"),
+                Sort.Order.desc("createdAt"),
+                Sort.Order.asc("updatedAt")
+        );
+    }
 
     @Test
     void page(){
@@ -130,12 +140,63 @@ class MemberRepositoryTest {
         ).getContent());
     }
 
-    private Sort getSort(){
-        return Sort.by(
-                Sort.Order.desc("id"),
-                Sort.Order.asc("email"),
-                Sort.Order.desc("createdAt"),
-                Sort.Order.asc("updatedAt")
-        );
+    @Test
+    void insertAndUpdateTest(){
+        Member member = Member.builder()
+                .name("martin")
+                .email("martin@gmail.com")
+                .build();
+
+        memberRepository.save(member);
+
+        Member findMember = memberRepository.findById(1L).orElseThrow(RuntimeException::new);
+        findMember.setName("marrrrrtin");
+        memberRepository.save(findMember);
+    }
+
+    @Test
+    void enumTest(){
+        Member member = memberRepository.findById(1L).orElseThrow(RuntimeException::new);
+        member.setGender(Gender.FEMALE);
+        memberRepository.save(member);
+        memberRepository.findAll().forEach(System.out::println);
+
+        System.out.println(memberRepository.findRawRecord().get("gender"));
+    }
+
+    @Test
+    void listenerTest(){
+        Member member = Member.builder()
+                .email("martin@gmail.com").name("martin").build();
+
+        memberRepository.save(member);
+
+        Member findMember = memberRepository.findById(1L).orElseThrow(RuntimeException::new);
+        findMember.setName("marrrrrrrrrrrtin");
+        memberRepository.save(findMember);
+        memberRepository.deleteById(4L);
+    }
+
+    @Test
+    void prePersistTest(){
+        Member member = Member.builder()
+                .email("martin2@gmail.com")
+                .name("martin")
+                .createdAt(LocalDateTime.now())
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        memberRepository.save(member);
+
+        System.out.println(memberRepository.findByEmail("martin2@gmail.com").orElseThrow(RuntimeException::new));
+    }
+
+    @Test
+    void preUpdateTest(){
+        Member member = memberRepository.findById(1L).orElseThrow(RuntimeException::new);
+        System.out.println("as-is: : " + member);
+        member.setName("martin22");
+        memberRepository.save(member);
+        System.out.println("to-be : " + memberRepository.findAll().get(0));
     }
 }
