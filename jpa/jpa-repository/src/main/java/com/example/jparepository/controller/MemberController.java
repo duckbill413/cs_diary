@@ -15,15 +15,5 @@ import java.util.List;
 @RequestMapping("/api/member")
 @RequiredArgsConstructor
 public class MemberController {
-    private final MemberRepository memberRepository;
 
-    @GetMapping("/all")
-    public ResponseEntity<List<Member>> getAllUser() {
-        memberRepository.save(new Member(1L, "steve", "steve@gmail.com",
-                LocalDateTime.now(), LocalDateTime.now()));
-        memberRepository.save(new Member(2L, "duckbill", "duckbill@gmail.com",
-                LocalDateTime.now(), LocalDateTime.now()));
-        List<Member> users = memberRepository.findAll();
-        return ResponseEntity.ok(users);
-    }
 }

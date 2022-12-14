@@ -2,12 +2,13 @@ package com.example.jparepository.repository;
 
 import com.example.jparepository.domain.Gender;
 import com.example.jparepository.domain.Member;
+import com.example.jparepository.domain.MemberHistory;
+import org.aspectj.weaver.ISourceContext;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.*;
-import sun.util.resources.LocaleData;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,6 +19,8 @@ import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatc
 class MemberRepositoryTest {
     @Autowired
     private MemberRepository memberRepository;
+    @Autowired
+    private MemberHistoryRepository memberHistoryRepository;
 
     @Test
     void crud(){ // create, read, update, delete
@@ -97,7 +100,6 @@ class MemberRepositoryTest {
                 LocalDateTime.now().minusDays(1L)
         ));
         System.out.println("findByIdIsNotNull: " + memberRepository.findByIdIsNotNull());
-        System.out.println("findByAddressIsNotEmpty: " + memberRepository.findByAddressIsNotEmpty());
         System.out.println("findByNameIn: " + memberRepository.findByNameIn(
                 Lists.newArrayList("martin", "dennis")
         ));
@@ -182,9 +184,9 @@ class MemberRepositoryTest {
         Member member = Member.builder()
                 .email("martin2@gmail.com")
                 .name("martin")
-                .createdAt(LocalDateTime.now())
-                .updatedAt(LocalDateTime.now())
                 .build();
+        member.setCreatedAt(LocalDateTime.now());
+        member.setUpdatedAt(LocalDateTime.now());
 
         memberRepository.save(member);
 
@@ -198,5 +200,41 @@ class MemberRepositoryTest {
         member.setName("martin22");
         memberRepository.save(member);
         System.out.println("to-be : " + memberRepository.findAll().get(0));
+    }
+
+    @Test
+    void memberHistoryTest(){
+        Member member = Member.builder()
+                .name("martin-new")
+                .email("martin-new@gmail.com")
+                .build();
+        memberRepository.save(member);
+        member.setName("duckbill");
+        memberRepository.save(member);
+
+        memberHistoryRepository.findAll().forEach(System.out::println);
+    }
+
+    @Test
+    void userRelationTest(){
+        Member member = new Member();
+        member.setName("david");
+        member.setEmail("david@gmail.com");
+        member.setGender(Gender.MALE);
+
+        memberRepository.save(member);
+
+        member.setName("daniel");
+        memberRepository.save(member);
+
+        member.setName("duckbill");
+        memberRepository.save(member);
+
+//        memberHistoryRepository.findAll().forEach(System.out::println);
+
+        List<MemberHistory> result = memberRepository.findByEmail(
+                "david@gmail.com"
+        ).orElseThrow(RuntimeException::new).getMemberHistories();
+        result.forEach(System.out::println);
     }
 }

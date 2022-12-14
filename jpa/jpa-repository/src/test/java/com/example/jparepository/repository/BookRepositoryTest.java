@@ -15,7 +15,8 @@ class BookRepositoryTest {
     void bookTest(){
         Book book = Book.builder()
                 .name("스프링 이해")
-                .author("duckbill")
+                .authorId(1L)
+                .publisherId(1L)
                 .build();
 
         bookRepository.save(book);

@@ -1,10 +1,10 @@
 package com.example.jparepository.domain;
 
+import com.example.jparepository.domain.listener.MemberEntityListener;
 import lombok.*;
-import net.bytebuddy.asm.Advice;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -12,11 +12,11 @@ import java.util.List;
 @AllArgsConstructor
 @RequiredArgsConstructor
 @Entity
-@EntityListeners(value = MyEntityListener.class)
 @Builder
-//@Table(name = "user", uniqueConstraints ={@UniqueConstraint(columnNames = {"email"})},
-//indexes = {@Index(columnList = "name")})
-public class Member implements Auditable{
+@ToString(callSuper = true)
+@EntityListeners(value = {MemberEntityListener.class})
+@EqualsAndHashCode(callSuper = true)
+public class Member extends BaseEntity {
     /** @GeneratedValue
      * IDENTITY: MySQL 등 상용 서비스에서 가장 많이 사용됨 (auto increment)
      * SEQUENCE: Oracle, H2 등에서 사용
@@ -24,7 +24,7 @@ public class Member implements Auditable{
      * return DEFAULT == AUTO (DB에 따라 자동으로 맞춰짐)
      */
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @NonNull
     private String name;
@@ -32,33 +32,7 @@ public class Member implements Auditable{
     private String email;
     @Enumerated(EnumType.STRING)
     private Gender gender;
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    @Transient
-    private String testData;
     @OneToMany(fetch = FetchType.EAGER)
-    private List<Address> address;
-
-    /*
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    public void preUpdate(){
-        this.updatedAt = LocalDateTime.now();
-    }
-
-     */
-
-    public Member(Long id, String name, String email, LocalDateTime createdAt, LocalDateTime updatedAt) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-    }
+    @JoinColumn(name = "member_id", insertable = false, updatable = false)
+    private List<MemberHistory> memberHistories = new ArrayList<>(); // MEMO: NullPointException 방지
 }

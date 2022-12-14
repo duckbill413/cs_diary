@@ -3,34 +3,25 @@ package com.example.jparepository.domain;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@RequiredArgsConstructor
 @Data
 @Builder
-@EntityListeners(value = MyEntityListener.class)
-public class Book implements Auditable{
+public class Book extends BaseEntity{
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
-    private String author;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-    /*
-    @PrePersist
-    public void prePersist(){
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
+    private String category;
+    private Long authorId;
+    private Long publisherId;
 
-    @PreUpdate
-    public void preUpdate(){
-        this.updatedAt = LocalDateTime.now();
-    }
+    @OneToOne(mappedBy = "book")
+    @ToString.Exclude
+    private BookReviewInfo bookReviewInfo;
 
-     */
 }
