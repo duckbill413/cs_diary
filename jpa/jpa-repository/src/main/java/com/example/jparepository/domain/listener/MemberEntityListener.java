@@ -21,9 +21,9 @@ public class MemberEntityListener {
         Member member = (Member) o;
 
         MemberHistory memberHistory = MemberHistory.builder()
-                .memberId(member.getId())
                 .name(member.getName())
                 .email(member.getEmail())
+                .member(member)
                 .build();
         memberHistory.setCreatedAt(member.getCreatedAt());
         memberHistory.setUpdatedAt(member.getUpdatedAt());

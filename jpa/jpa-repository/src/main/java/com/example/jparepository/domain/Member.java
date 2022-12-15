@@ -33,6 +33,7 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Gender gender;
     @OneToMany(fetch = FetchType.EAGER)
+    @ToString.Exclude
     @JoinColumn(name = "member_id", insertable = false, updatable = false)
     private List<MemberHistory> memberHistories = new ArrayList<>(); // MEMO: NullPointException 방지
 }
