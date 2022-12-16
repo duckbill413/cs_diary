@@ -34,6 +34,13 @@ public class Member extends BaseEntity {
     private Gender gender;
     @OneToMany(fetch = FetchType.EAGER)
     @ToString.Exclude
+    @Builder.Default
     @JoinColumn(name = "member_id", insertable = false, updatable = false)
     private List<MemberHistory> memberHistories = new ArrayList<>(); // MEMO: NullPointException 방지
+
+    @OneToMany
+    @JoinColumn(name = "member_id")
+    @ToString.Exclude
+    @Builder.Default
+    private List<Review> reviews = new ArrayList<>();
 }
