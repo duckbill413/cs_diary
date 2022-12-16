@@ -40,6 +40,7 @@ class BookRepositoryTest {
         givenBookAndReview();
 
         Member member = memberRepository.findByEmail("martin@gmail.com").orElseThrow(RuntimeException::new);
+        System.out.println("Member : " + member);
         System.out.println("Review : " + member.getReviews());
         System.out.println("Book : " + member.getReviews().get(0).getBook());
         System.out.println("Publisher : " + member.getReviews().get(0).getBook().getPublisher());
