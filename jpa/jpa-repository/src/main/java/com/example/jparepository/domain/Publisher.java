@@ -20,7 +20,11 @@ public class Publisher extends BaseEntity{
     private Long id;
 
     private String name;
-//    @OneToMany
-//    @JoinColumn(name = "publisher_id")
-//    private List<Book> books = new ArrayList<>();
+    @OneToMany
+    @JoinColumn(name = "publisher_id")
+    private List<Book> books = new ArrayList<>();
+
+    public void addBook(Book book){
+        books.add(book);
+    }
 }

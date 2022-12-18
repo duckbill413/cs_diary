@@ -18,7 +18,6 @@ class BookServiceTest {
     private AuthorRepository authorRepository;
     @Autowired
     private BookService bookService;
-
     @Test // MEMO: Transaction 은 메소드가 완료되었을때 수행된다.
     void transactionTest(){
         bookService.putBookAndAuthor();

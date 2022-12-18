@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -19,16 +20,19 @@ public class BookService {
     private final BookRepository bookRepository;
     private final AuthorRepository authorRepository;
     private final EntityManager entityManager;
+    private final AuthorService authorService;
 
-    @Transactional
+    @Transactional(propagation = Propagation.REQUIRED)
     public void putBookAndAuthor(){
         Book book = new Book();
         book.setName("JPA 시작하기");
         bookRepository.save(book);
 
-        Author author = new Author();
-        author.setName("martin");
-        authorRepository.save(author);
+        authorService.putAuthor();
+
+//        Author author = new Author();
+//        author.setName("martin");
+//        authorRepository.save(author);
     }
 
     @Transactional
