@@ -7,13 +7,17 @@ spring:
     properties:
       hibernate:
         format_sql: true
-    generate-ddl: false
+    generate-ddl: true # 자동으로 entity 에서 활용하는 테이블을 생성
     hibernate:
-      ddl-auto: create
+      ddl-auto: create-drop
     defer-datasource-initialization: true
   sql:
     init:
       mode: always
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/book_manager
+    username: root
+    password: 413730
 server:
   port: 8080
 logging:

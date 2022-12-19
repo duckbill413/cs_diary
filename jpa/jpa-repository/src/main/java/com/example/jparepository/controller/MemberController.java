@@ -12,8 +12,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/member")
-@RequiredArgsConstructor
 public class MemberController {
-
+    @GetMapping("/hello-world")
+    public String helloWorld(){
+        return "hello-world";
+    }
 }

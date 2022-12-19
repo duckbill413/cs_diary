@@ -7,6 +7,7 @@ import lombok.ToString;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Entity
@@ -14,13 +15,20 @@ import java.util.List;
 @Data
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-public class Publisher extends BaseEntity{
+public class Author extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String name;
-//    @OneToMany
-//    @JoinColumn(name = "publisher_id")
-//    private List<Book> books = new ArrayList<>();
+    private String country;
+
+//    @ManyToMany
+    @OneToMany
+    @JoinColumn(name = "author_id")
+    @ToString.Exclude
+    private List<BookAndAuthor> bookAndAuthors = new ArrayList<>();
+
+    public void addBookAndAuthors(BookAndAuthor... bookAndAuthors) { // ...은 배열 의미
+        Collections.addAll(this.bookAndAuthors, bookAndAuthors);
+    }
 }
