@@ -4,6 +4,7 @@ import com.example.jparepository.domain.Book;
 import com.example.jparepository.domain.Member;
 import com.example.jparepository.domain.Publisher;
 import com.example.jparepository.domain.Review;
+import org.aspectj.weaver.ISourceContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -77,25 +78,66 @@ class BookRepositoryTest {
         reviewRepository.save(review);
     }
 
-    @Test
+    @Test // INFO: Cascade PERSIST
     void bookCascadeTest(){
         Book book = new Book();
         book.setName("JPA 초격차 패키지");
 
-        bookRepository.save(book);
-
         Publisher publisher = new Publisher();
-        publisher.setName("패스트캠퍼스");
-
-        publisherRepository.save(publisher);
+        publisher.setName("공부하자");
 
         book.setPublisher(publisher);
-        bookRepository.save(book);
-
-        publisher.getBooks().add(book);
-        publisherRepository.save(publisher);
+        bookRepository.save(book); // book entity 를 업데이트 했을때 영속성 전이로 인해 publisher 도 같이 update 됨
 
         System.out.println("book : " + bookRepository.findAll());
         System.out.println("publishers : " + publisherRepository.findAll());
+
+        Book findBook = bookRepository.findById(1L).get();
+        findBook.getPublisher().setName("공부싫어");
+        bookRepository.save(findBook); // update 는 MERGE 에 해당하므로 PERSIST 에서는 영속성 전이가 일어나지 않는다. 따라서 publisher 가 업데이트 되지 않는다.
+
+        System.out.println("publishers : " + publisherRepository.findAll());
+    }
+    @Test // INFO: Orphan Removal (고아제거속성)
+    void bookCascadeTest2(){
+        Book book = new Book();
+        book.setName("JPA 초격차 패키지");
+
+        Publisher publisher = new Publisher();
+        publisher.setName("공부하자");
+
+        book.setPublisher(publisher);
+        bookRepository.save(book); // book entity 를 업데이트 했을때 영속성 전이로 인해 publisher 도 같이 update 됨
+
+        Book findBook = bookRepository.findById(1L).get();
+        findBook.getPublisher().setName("공부싫어");
+        bookRepository.save(findBook); // update 는 MERGE 에 해당하므로 PERSIST 에서는 영속성 전이가 일어나지 않는다. 따라서 publisher 가 업데이트 되지 않는다.
+
+        System.out.println("publishers : " + publisherRepository.findAll());
+
+//        Book findBook2 = bookRepository.findById(1L).get();
+//        bookRepository.delete(findBook2);
+
+        Book book3 = bookRepository.findById(1L).get();
+        book3.setPublisher(null);
+        bookRepository.save(book3);
+
+        System.out.println("books : " + bookRepository.findAll());
+        System.out.println("publishers : " + publisherRepository.findAll());
+        System.out.println("book3-publisher : " + bookRepository.findById(1L));
+    }
+
+    @Test
+    void bookRemoveCascadeTest(){
+        bookRepository.deleteById(1L);
+        System.out.println("books : " + bookRepository.findAll());
+        System.out.println("publisher : " + publisherRepository.findAll());
+
+        bookRepository.findAll().forEach(book -> System.out.println(book.getPublisher()));
+    }
+
+    @Test
+    void softDelete(){
+        bookRepository.findAll().forEach(System.out::println);
     }
 }

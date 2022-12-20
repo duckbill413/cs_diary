@@ -2,6 +2,7 @@ package com.example.jparepository.domain;
 
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 @Builder
+//@Where(clause = "deleted = false")
 //@DynamicUpdate
 public class Book extends BaseEntity{
     @Id
@@ -23,6 +25,8 @@ public class Book extends BaseEntity{
     private String name;
     private String category;
     private Long authorId;
+//    @ToString.Exclude
+    private boolean deleted; // true : deleted, false : not deleted
 
     @OneToOne(mappedBy = "book")
     @ToString.Exclude
@@ -34,8 +38,8 @@ public class Book extends BaseEntity{
     @Builder.Default
     private List<Review> reviews = new ArrayList<>();
 
-    @ManyToOne
-//    @ToString.Exclude
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}) // REMOVE : 고아 제거
+    @ToString.Exclude
     private Publisher publisher;
 
 //    @ManyToMany
