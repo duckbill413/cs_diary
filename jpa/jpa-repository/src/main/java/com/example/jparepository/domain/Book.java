@@ -38,12 +38,11 @@ public class Book extends BaseEntity{
     @Builder.Default
     private List<Review> reviews = new ArrayList<>();
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REMOVE}) // REMOVE : 고아 제거
-    @ToString.Exclude
+    @ManyToOne // REMOVE : 고아 제거
     private Publisher publisher;
 
 //    @ManyToMany
-    @OneToMany
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "book_id")
     @ToString.Exclude
     private List<BookAndAuthor> bookAndAuthors = new ArrayList<>();

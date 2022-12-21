@@ -8,8 +8,11 @@ import org.aspectj.weaver.ISourceContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 
 import javax.transaction.Transactional;
+
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 @SpringBootTest
@@ -113,8 +116,6 @@ class BookRepositoryTest {
         findBook.getPublisher().setName("공부싫어");
         bookRepository.save(findBook); // update 는 MERGE 에 해당하므로 PERSIST 에서는 영속성 전이가 일어나지 않는다. 따라서 publisher 가 업데이트 되지 않는다.
 
-        System.out.println("publishers : " + publisherRepository.findAll());
-
 //        Book findBook2 = bookRepository.findById(1L).get();
 //        bookRepository.delete(findBook2);
 
@@ -139,5 +140,43 @@ class BookRepositoryTest {
     @Test
     void softDelete(){
         bookRepository.findAll().forEach(System.out::println);
+    }
+
+    @Test
+    void tt(){
+        bookRepository.deleteById(1L);
+        ttt();
+    }
+
+    @Test
+    void ttt(){
+        System.out.println("books-------------------------------------");
+        bookRepository.findAll().forEach(book -> System.out.println("book : " + book));
+        System.out.println("publishers--------------------------------");
+        publisherRepository.findAll().forEach(publisher -> System.out.println("publisher : " + publisher));
+        System.out.println("bp----------------------------------------");
+        bookRepository.findAll().forEach(book -> System.out.println("Book Id " + book.getId() + "'s publisher : " + book.getPublisher()));
+    }
+
+    @Test
+    void findByNameRecentlyTest(){
+        System.out.println("findByNameRecently : " +
+                bookRepository.findByNameRecently("JPA Master",
+                        LocalDateTime.now().minusDays(1L),
+                        LocalDateTime.now().minusDays(1L)));
+
+    }
+
+    @Test
+    void findByWant(){
+        bookRepository.findBookNameAndCategory().forEach(bookNameAndCategory -> {
+            System.out.println(bookNameAndCategory.getName() + " : " + bookNameAndCategory.getCategory());
+        });
+        bookRepository.findBookNameAndCategoryByPage(PageRequest.of(1, 1)).forEach(
+                bookNameAndCategoryClass -> System.out.println(bookNameAndCategoryClass.getName() + " : " + bookNameAndCategoryClass.getCategory())
+        );
+        bookRepository.findBookNameAndCategoryByPage(PageRequest.of(0, 1)).forEach(
+                bookNameAndCategoryClass -> System.out.println(bookNameAndCategoryClass.getName() + " : " + bookNameAndCategoryClass.getCategory())
+        );
     }
 }
