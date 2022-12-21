@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
+import java.util.List;
 
 
 @Service
@@ -56,5 +57,11 @@ public class BookService {
         System.out.println(">>> " + bookRepository.findById(id));
         System.out.println(">>> " + bookRepository.findAll());
         entityManager.clear(); // UNREPEATABLE 문제 발생
+    }
+    @Transactional
+    public List<Book> getAll(){
+        List<Book> books = bookRepository.findAll();
+        books.forEach(System.out::println);
+        return books;
     }
 }

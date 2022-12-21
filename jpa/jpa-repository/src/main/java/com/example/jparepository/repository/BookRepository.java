@@ -11,8 +11,10 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
@@ -49,5 +51,15 @@ public interface BookRepository extends JpaRepository<Book, Long> {
     @Query(value = "select new com.example.jparepository.repository.dto.BookNameAndCategoryClass(b.name, b.category) from Book b")
     List<BookNameAndCategoryClass> findBookNameAndCategoryByClass();
     @Query(value = "select new com.example.jparepository.repository.dto.BookNameAndCategoryClass(b.name, b.category) from Book b")
-    Page<BookNameAndCategoryClass> findBookNameAndCategoryByPage(PageRequest of);
+    Page<BookNameAndCategoryClass> findBookNameAndCategoryByPage(Pageable pageable);
+    @Query(value = "select * from book", nativeQuery = true)
+    List<Book> findAllCustom();
+
+    @Transactional // native query 실행시 직접 transational 을 설정해 주어야 한다.
+    @Modifying // MEMO: UPDATE, DELETE 같은 쿼리에서 사용하면 int 값에 리턴이 발생한다.
+    @Query(value = "update book set category='IT전문서'", nativeQuery = true)
+    int updateCategories();
+
+    @Query(value = "select * from book order by id desc limit 1", nativeQuery = true)
+    Map<String, Object> findRawRecord();
 }

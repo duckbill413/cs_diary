@@ -4,6 +4,8 @@ import com.example.jparepository.domain.Book;
 import com.example.jparepository.domain.Member;
 import com.example.jparepository.domain.Publisher;
 import com.example.jparepository.domain.Review;
+import com.example.jparepository.repository.dto.BookStatus;
+import com.example.jparepository.service.BookService;
 import org.aspectj.weaver.ISourceContext;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,8 @@ class BookRepositoryTest {
     private ReviewRepository reviewRepository;
     @Autowired
     private MemberRepository memberRepository;
-
+    @Autowired
+    private BookService bookService;
     @Test
     void bookTest(){
         Book book = Book.builder()
@@ -178,5 +181,31 @@ class BookRepositoryTest {
         bookRepository.findBookNameAndCategoryByPage(PageRequest.of(0, 1)).forEach(
                 bookNameAndCategoryClass -> System.out.println(bookNameAndCategoryClass.getName() + " : " + bookNameAndCategoryClass.getCategory())
         );
+    }
+
+    @Test
+    void nativeQueryTest(){
+        bookRepository.findAll().forEach(System.out::println);
+        bookRepository.findAllCustom().forEach(System.out::println);
+    }
+
+    @Test
+    void convertTest(){
+        bookRepository.findAll().forEach(System.out::println);
+
+        Book book = new Book();
+        book.setName("추가 IT전문서적");
+        book.setStatus(new BookStatus(200));
+
+        bookRepository.save(book);
+
+        System.out.println(bookRepository.findRawRecord().values());
+    }
+
+    @Test
+    void converterErrorTest(){
+        bookService.getAll();
+
+        bookRepository.findAll().forEach(System.out::println); // 영속성 context 의 에러 확인 가능
     }
 }

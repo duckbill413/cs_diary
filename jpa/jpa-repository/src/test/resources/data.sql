@@ -20,8 +20,8 @@ values (5, 'martin', 'martin@yahoo.ac.kr', now(), now());
 
 insert into publisher(`id`, `name`) values (1, 'Lets Start');
 
-insert into book (`id`, `name`, `publisher_id`, `deleted`) values (1, 'JPA Master', 1, false);
+insert into book (`id`, `name`, `publisher_id`, `deleted`, `status`) values (1, 'JPA Master', 1, false, 100);
 
-insert into book (`id`, `name`, `publisher_id`, `deleted`) values (2, 'Spring Security Master', 1, false);
+insert into book (`id`, `name`, `publisher_id`, `deleted`, `status`) values (2, 'Spring Security Master', 1, false, 200);
 
-insert into book (`id`, `name`, `publisher_id`, `deleted`) values (3, 'Spring JPA All Master', 1, true);
+insert into book (`id`, `name`, `publisher_id`, `deleted`, `status`) values (3, 'Spring JPA All Master', 1, true, 100);

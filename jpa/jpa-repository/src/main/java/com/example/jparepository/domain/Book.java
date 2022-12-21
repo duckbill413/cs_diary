@@ -1,5 +1,7 @@
 package com.example.jparepository.domain;
 
+import com.example.jparepository.domain.converter.BookStatusConvertor;
+import com.example.jparepository.repository.dto.BookStatus;
 import lombok.*;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.Where;
@@ -27,6 +29,8 @@ public class Book extends BaseEntity{
     private Long authorId;
 //    @ToString.Exclude
     private boolean deleted; // true : deleted, false : not deleted
+//    @Convert(converter = BookStatusConvertor.class)
+    private BookStatus status; // 판매 상태
 
     @OneToOne(mappedBy = "book")
     @ToString.Exclude
