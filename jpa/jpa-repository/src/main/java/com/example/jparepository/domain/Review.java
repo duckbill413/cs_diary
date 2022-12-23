@@ -3,6 +3,8 @@ package com.example.jparepository.domain;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -22,4 +24,7 @@ public class Review extends BaseEntity{
     private Member member;
     @ManyToOne
     private Book book;
+    @OneToMany
+    @JoinColumn(name = "review_id")
+    private List<Comment> comments = new ArrayList<>();
 }

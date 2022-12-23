@@ -36,5 +36,5 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     // FEAT: Enum check
     @Query(value = "select * from member limit 1;", nativeQuery = true)
-    Map<String, Object> findRawRecord();
+    Map<String, Object> findAllRawRecord();
 }

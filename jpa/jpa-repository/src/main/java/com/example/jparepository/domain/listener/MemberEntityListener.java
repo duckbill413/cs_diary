@@ -24,6 +24,8 @@ public class MemberEntityListener {
                 .name(member.getName())
                 .email(member.getEmail())
                 .member(member)
+                .homeAddress(member.getHomeAddress())
+                .companyAddress(member.getCompanyAddress())
                 .build();
         memberHistory.setCreatedAt(member.getCreatedAt());
         memberHistory.setUpdatedAt(member.getUpdatedAt());
