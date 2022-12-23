@@ -1,19 +1,23 @@
 package com.example.jparepository.repository;
 
+import com.example.jparepository.domain.Address;
 import com.example.jparepository.domain.Gender;
 import com.example.jparepository.domain.Member;
 import com.example.jparepository.domain.MemberHistory;
-import org.aspectj.weaver.ISourceContext;
 import org.assertj.core.util.Lists;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.*;
 
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertTimeout;
 import static org.springframework.data.domain.ExampleMatcher.GenericPropertyMatchers.endsWith;
 
 @SpringBootTest
@@ -23,6 +27,8 @@ class MemberRepositoryTest {
     private MemberRepository memberRepository;
     @Autowired
     private MemberHistoryRepository memberHistoryRepository;
+    @Autowired
+    private EntityManager entityManager;
 
     @Test
     void crud(){ // create, read, update, delete
@@ -165,7 +171,7 @@ class MemberRepositoryTest {
         memberRepository.save(member);
         memberRepository.findAll().forEach(System.out::println);
 
-        System.out.println(memberRepository.findRawRecord().get("gender"));
+        System.out.println(memberRepository.findAllRawRecord().get("gender"));
     }
 
     @Test
@@ -238,5 +244,44 @@ class MemberRepositoryTest {
                 "david@gmail.com"
         ).orElseThrow(RuntimeException::new).getMemberHistories();
         result.forEach(System.out::println);
+    }
+
+    @Test
+    void embedTest(){
+        memberRepository.findAll().forEach(System.out::println);
+
+        Member member = new Member();
+        member.setName("joy");
+        member.setHomeAddress(new Address("서울시", "성동구", "성수1가", "023902"));
+        member.setCompanyAddress(new Address("경기도", "남양주", "어딘가", "581912"));
+
+        memberRepository.save(member);
+
+        Member member1 = new Member();
+        member1.setName("joshua");
+        member1.setHomeAddress(null);
+        member1.setCompanyAddress(null);
+
+        memberRepository.save(member1);
+
+        Member member2 = new Member();
+        member2.setName("jordan");
+        member2.setHomeAddress(new Address());
+        member2.setCompanyAddress(new Address());
+
+        memberRepository.save(member2);
+
+//        entityManager.clear();
+
+        memberRepository.findAll().forEach(System.out::println);
+        memberHistoryRepository.findAll().forEach(System.out::println);
+
+        memberRepository.findAllRawRecord().forEach((s, o) -> System.out.println(o));
+
+        // FEAT: 274번째 라인의 주석을 해제하면 에러가 발생한다. 영속성 캐시가 없어지면서 문제가 발생하게 되는 것이다.
+        assertAll(
+                () -> assertThat(memberRepository.findById(7L).get().getHomeAddress()).isNull(),
+                () -> assertThat(memberRepository.findById(8L).get().getHomeAddress()).isInstanceOf(Address.class)
+        );
     }
 }
