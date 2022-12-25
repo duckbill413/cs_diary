@@ -1,0 +1,32 @@
+server:
+  port: 8080
+
+spring:
+  security:
+    user:
+      name: root
+      password: 1234
+      roles: ADMIN
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
+      schema-locations: classpath*:db/mysql/schema.sql
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/spring_security
+    username: root
+    password: 413730
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+
+logging:
+  level:
+    sql: info
