@@ -19,23 +19,41 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-web'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+
+    // security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.security:spring-security-test'
 
     implementation 'com.fasterxml.jackson.core:jackson-annotations'
     testImplementation 'com.fasterxml.jackson.core:jackson-annotations'
+    //validation
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
 
+    // thymeleaf
     implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
+    implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect:3.1.0'
     implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity5'
-
+    // jpa - mysql
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     runtimeOnly 'mysql:mysql-connector-java'
     implementation 'mysql:mysql-connector-java'
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    //modelmapper
+    implementation 'org.modelmapper:modelmapper:3.1.0'
+    //swagger
+//    implementation 'io.springfox:springfox-boot-starter:3.0.0'
+//    implementation 'io.springfox:springfox-swagger-ui:3.0.0'
+
+    implementation 'com.google.code.gson:gson:2.8.9'
+
+    implementation 'io.jsonwebtoken:jjwt:0.9.1'
+
+    // else
+    implementation 'net.coobird:thumbnailator:0.4.16'
 }
 
 tasks.named('test') {

@@ -26,7 +26,11 @@ spring:
     password: 413730
     driver-class-name: com.mysql.cj.jdbc.Driver
 
-
 logging:
   level:
     sql: info
+    org.springframework: info
+    org.springframework.security: info
+    com.example: debug
+
+com.example.security.upload.path: "D:\\upload"
