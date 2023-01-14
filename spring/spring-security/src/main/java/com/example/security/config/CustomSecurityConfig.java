@@ -51,8 +51,8 @@ public class CustomSecurityConfig {
         //커스텀 로그인 페이지
         // 헤더, csrf 설정
         http
-                .headers().disable();
-//                .csrf().disable();
+                .headers().disable()
+                .csrf().disable();
         // request 권한 설정
         http.authorizeRequests(request -> request
                 .antMatchers("/").permitAll()

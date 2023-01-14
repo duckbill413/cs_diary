@@ -1,9 +1,6 @@
 package com.example.jparepository.repository;
 
-import com.example.jparepository.domain.Book;
-import com.example.jparepository.domain.Member;
-import com.example.jparepository.domain.Publisher;
-import com.example.jparepository.domain.Review;
+import com.example.jparepository.domain.*;
 import com.example.jparepository.repository.dto.BookStatus;
 import com.example.jparepository.service.BookService;
 import org.aspectj.weaver.ISourceContext;
@@ -73,6 +70,7 @@ class BookRepositoryTest {
 
         return publisherRepository.save(publisher);
     }
+
     private void givenReview(Member member, Book book){
         Review review = new Review();
         review.setTitle("내 인생을 바꾼 책");
@@ -82,6 +80,29 @@ class BookRepositoryTest {
         review.setBook(book);
 
         reviewRepository.save(review);
+    }
+
+    @Test
+    @Transactional
+    void bookAndReviewTest(){
+        Book book = Book.builder()
+                .name("우리 모두 안녕")
+                .category("비문학")
+                .build();
+        Review review1 = new Review();
+        Review review2 = new Review();
+        review1.setTitle("좋앙");
+        review1.setContent("너무 좋은 책");
+        review2.setTitle("괜찮네요");
+        review2.setContent("감동이네요><");
+
+        review1.setBook(book);
+        review2.setBook(book);
+        book.getReviews().add(review1);
+        book.getReviews().add(review2);
+
+        Book savedBook = bookRepository.save(book);
+        System.out.println(savedBook);
     }
 
     @Test // INFO: Cascade PERSIST

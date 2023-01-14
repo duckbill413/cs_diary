@@ -34,7 +34,7 @@ public class Book extends BaseEntity{
     @ToString.Exclude
     private BookReviewInfo bookReviewInfo;
 
-    @OneToMany
+    @OneToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinColumn(name = "book_id")
     @ToString.Exclude
     @Builder.Default
