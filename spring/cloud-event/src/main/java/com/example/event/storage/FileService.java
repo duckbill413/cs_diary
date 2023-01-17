@@ -1,11 +1,15 @@
 package com.example.event.storage;
 
+import com.example.event.event.AfterFileTransactionEvent;
+import com.example.event.event.BeforeFileTransactionEvent;
 import com.example.event.event.FileEvent;
 import com.example.event.event.FileEventPublisher;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 @Slf4j
@@ -20,10 +24,15 @@ public class FileService {
             log.info("DB 파일 메타 정보 저장 완료");
             FileEvent fileEvent = FileEvent.toCompleteEvent(data);
             fileEventPublisher.notifyComplete(fileEvent);
-        } catch (Exception e){
+        } catch (Exception e) {
             log.error("file upload failed", e);
             FileEvent fileEvent = FileEvent.toErrorEvent(data);
             fileEventPublisher.notifyError(fileEvent);
         }
+    }
+
+    public void fileSet(Map<String, Object> data) {
+        FileEvent fileEvent = FileEvent.toCompleteEvent(data);
+        fileEventPublisher.fileSet(fileEvent);
     }
 }
