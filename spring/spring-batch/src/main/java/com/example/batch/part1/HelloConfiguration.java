@@ -15,6 +15,8 @@ import org.springframework.context.annotation.Configuration;
  * author        : duckbill413
  * date          : 2023-01-18
  * description   :
+ * - Step을 Job에 등록하여 배치 프로그램을 실행시켜 보는 예제
+ * - new RunIdIncrementer로 항상 새로운 run.id를 부여
  **/
 @Slf4j
 @Configuration
