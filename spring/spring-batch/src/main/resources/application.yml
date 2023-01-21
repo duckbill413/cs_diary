@@ -5,7 +5,11 @@ spring:
     jdbc:
       initialize-schema: always
   datasource:
-    url: jdbc:mysql://localhost/spring_batch?serverTimezone=UTC&characterEncoding=UTF-8
-    username: root
-    password: 413730
-    driver-class-name: com.mysql.cj.jdbc.Driver
+  #    url: jdbc:mysql://localhost/spring_batch?serverTimezone=UTC&characterEncoding=UTF-8
+  #    username: root
+  #    password: 413730
+  #    driver-class-name: com.mysql.cj.jdbc.Driver
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
