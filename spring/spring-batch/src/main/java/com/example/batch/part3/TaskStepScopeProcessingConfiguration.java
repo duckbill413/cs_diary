@@ -84,4 +84,5 @@ public class TaskStepScopeProcessingConfiguration {
         }
         return items;
     }
+    //ItemInterface
 }
