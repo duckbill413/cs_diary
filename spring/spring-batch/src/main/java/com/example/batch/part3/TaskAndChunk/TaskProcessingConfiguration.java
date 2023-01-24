@@ -1,10 +1,9 @@
-package com.example.batch.part3;
+package com.example.batch.part3.TaskAndChunk;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
-import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
@@ -26,53 +25,36 @@ import java.util.List;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class TaskSizeProcessingConfiguration {
+public class TaskProcessingConfiguration {
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
 
     @Bean
-    public Job taskSizeProcessingJob(){
-        return jobBuilderFactory.get("taskSizeProcessingJob")
+    public Job taskProcessingJob(){
+        return jobBuilderFactory.get("taskProcessingJob")
                 .incrementer(new RunIdIncrementer())
-                .start(this.taskSizeBaseStep())
+                .start(this.taskBaseStep())
                 .build();
     }
 
     @Bean
-    public Step taskSizeBaseStep(){
+    public Step taskBaseStep(){
         return stepBuilderFactory.get("taskBaseStep")
                 .tasklet(this.tasklet())
                 .build();
     }
 
     private Tasklet tasklet(){
-        List<String> items = getItems();
-
         return (contribution, chunkContext) -> {
-            StepExecution stepExecution = contribution.getStepExecution();
-
-            int chunkSize = 10;
-            int fromIndex = stepExecution.getReadCount();
-            int toIndex = fromIndex + chunkSize;
-            if (toIndex > items.size())
-                toIndex = items.size();
-
-            if (fromIndex >= items.size()){
-                return RepeatStatus.FINISHED;
-            }
-
-            List<String> subList = items.subList(fromIndex, toIndex);
-
-            log.info("task sub item size: {}", subList.size());
-
-            stepExecution.setReadCount(toIndex);
-            return RepeatStatus.CONTINUABLE;
+            List<String> items = getItems();
+            log.info("task item size: {}", items.size());
+            return RepeatStatus.FINISHED;
         };
     }
 
     private List<String> getItems(){
         List<String> items = new ArrayList<>();
-        for (int i = 0; i < 99; i++) {
+        for (int i = 0; i < 100; i++) {
             items.add(i + " Hello");
         }
         return items;
