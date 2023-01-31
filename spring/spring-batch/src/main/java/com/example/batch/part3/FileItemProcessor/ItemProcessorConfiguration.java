@@ -31,16 +31,16 @@ public class ItemProcessorConfiguration {
     private final StepBuilderFactory stepBuilderFactory;
 
     @Bean
-    public Job CSVItemProcessorJob() {
-        return this.jobBuilderFactory.get("CSVItemProcessorJob")
+    public Job itemProcessorJob() {
+        return this.jobBuilderFactory.get("ItemProcessorJob")
                 .incrementer(new RunIdIncrementer())
-                .start(this.CSVItemProcessorStep())
+                .start(this.itemProcessorStep())
                 .build();
     }
 
     @Bean
-    public Step CSVItemProcessorStep() {
-        return this.stepBuilderFactory.get("CSVItemProcessorStep")
+    public Step itemProcessorStep() {
+        return this.stepBuilderFactory.get("ItemProcessorStep")
                 .<Person, Person>chunk(10)
                 .reader(this.itemReader())
                 .processor(this.itemProcessor())
