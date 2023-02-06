@@ -3,7 +3,7 @@ spring:
     job:
       names: ${job.name:NONE}
     jdbc:
-      initialize-schema: always
+      initialize-schema:
   datasource:
     driver-class-name: org.h2.Driver
   h2:
@@ -13,3 +13,8 @@ spring:
   sql:
     init:
       data-locations: classpath:person.sql
+  jpa:
+    hibernate:
+      ddl-auto: update
+    defer-datasource-initialization: true
+    show-sql: true

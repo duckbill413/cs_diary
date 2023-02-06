@@ -27,6 +27,7 @@ import org.springframework.batch.item.support.builder.CompositeItemWriterBuilder
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.FileSystemResource;
 
 import javax.persistence.EntityManagerFactory;
@@ -63,7 +64,7 @@ public class SavePersonConfiguration {
                 .listener(new SavePersonListener.SavePersonStepExecutionListener())
                 .faultTolerant() // Skip과 같은 예외처리 메소드 지원
                 .skip(NotFoundNameException.class)
-                .skipLimit(3)
+                .skipLimit(2)
                 .build();
     }
 
@@ -79,7 +80,7 @@ public class SavePersonConfiguration {
         };
 
         CompositeItemProcessor<Person, Person> compositeItemProcessor = new CompositeItemProcessorBuilder()
-                .delegates(validationProcessor, personDuplicateValidationProcessor)
+                .delegates(new PersonValidationRetryProcessor(), validationProcessor, personDuplicateValidationProcessor)
                 .build();
         compositeItemProcessor.afterPropertiesSet();
         return compositeItemProcessor;
@@ -130,7 +131,7 @@ public class SavePersonConfiguration {
                 .name("savePersonItemReader")
                 .encoding("UTF-8")
                 .linesToSkip(1)
-                .resource(new FileSystemResource("output/test-input.csv"))
+                .resource(new ClassPathResource("person.csv"))
                 .lineMapper(lineMapper)
                 .build();
 

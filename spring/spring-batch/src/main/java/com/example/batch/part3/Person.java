@@ -48,4 +48,9 @@ public class Person {
                 ", address='" + address + '\'' +
                 '}';
     }
+
+    public Person unknownName() {
+        this.name = "UNKNOWN";
+        return this;
+    }
 }
