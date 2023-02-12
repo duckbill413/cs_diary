@@ -1,11 +1,9 @@
 package com.example.batch.part4.batch;
 
-import com.example.batch.part4.model.Users;
 import com.example.batch.part4.model.UsersRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.JobExecution;
-import org.springframework.batch.core.StepExecution;
 import org.springframework.batch.core.annotation.AfterJob;
 
 import java.time.LocalDate;
@@ -23,7 +21,7 @@ public class UsersGradeItemListener {
     private final UsersRepository usersRepository;
     @AfterJob
     public void showJobResult(JobExecution jobExecution){
-        Collection<Object> users = usersRepository.findAllByUpdateDate(LocalDate.now());
+        Collection<Object> users = usersRepository.findAllByUpdatedDate(LocalDate.now());
 
         Date startTime = jobExecution.getStartTime();
         Date endTime = jobExecution.getEndTime();

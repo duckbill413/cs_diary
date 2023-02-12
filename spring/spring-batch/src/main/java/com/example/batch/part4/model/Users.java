@@ -5,6 +5,8 @@ package com.example.batch.part4.model;
  * date          : 2023-02-07
  * description   :
  **/
+
+import com.example.batch.part5.Orders;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.Builder;
@@ -13,6 +15,8 @@ import lombok.AllArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -26,28 +30,40 @@ public class Users {
     private Integer id;
     private String name;
     @Enumerated(EnumType.STRING)
-    private Level level;
-    private Integer orderedPrice;
-    private LocalDate updateDate;
+    private Level level = Level.NORMAL;
+    private LocalDate updatedDate;
+    @OneToMany(mappedBy = "users", cascade = CascadeType.PERSIST)
+    private List<Orders> orders = new ArrayList<>();
 
     @Builder
-    public Users(String name, Integer orderedPrice){
+    public Users(String name, List<Orders> orders) {
         this.name = name;
-        this.level = Level.NORMAL;
-        this.orderedPrice = orderedPrice;
-        updateDate = LocalDate.now().minusDays(1);
+        this.orders = orders;
+        orders.forEach(o -> o.setUsers(this));
+
+        updatedDate = LocalDate.now().minusDays(1);
+    }
+    private int getTotalPrice(){
+        return this.orders.stream().mapToInt(Orders::getPrice).sum();
     }
 
-    public boolean availableLevelUp(){
-        return Level.availableLevelUp(this.getLevel(), this.getOrderedPrice());
+    public boolean availableLevelUp() {
+        return Level.availableLevelUp(this.getLevel(), this.getTotalPrice());
     }
 
-    public Level levelUp(){
-        Level nextLevel = Level.getNextLevel(this.getOrderedPrice());
+    public Level levelUp() {
+        Level nextLevel = Level.getNextLevel(this.getTotalPrice());
 
         this.level = nextLevel;
-        this.updateDate = LocalDate.now();
+        this.updatedDate = LocalDate.now();
 
         return nextLevel;
+    }
+
+    public void addOrder(Orders order) {
+        this.orders.add(order);
+        if (order.getUsers() != this) {
+            order.setUsers(this);
+        }
     }
 }
