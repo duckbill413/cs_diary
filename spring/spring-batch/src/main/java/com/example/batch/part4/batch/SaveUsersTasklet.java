@@ -21,6 +21,7 @@ import java.util.List;
  **/
 @RequiredArgsConstructor
 public class SaveUsersTasklet implements Tasklet {
+    private final int SIZE = 10_000;
     private final UsersRepository usersRepository;
 
     @Override
@@ -30,40 +31,52 @@ public class SaveUsersTasklet implements Tasklet {
         Collections.shuffle(users);
 
         usersRepository.saveAll(users);
+
         return RepeatStatus.FINISHED;
     }
 
     private List<Users> createUsers(){
         List<Users> users = new ArrayList<>();
-        for (int i = 0; i < 100; i++) {
-            Users user = new Users("user"+(i+1),
-                    Collections.singletonList(Orders.builder()
+
+        for (int i = 0; i < SIZE; i++) {
+            users.add(Users.builder()
+                    .orders(Collections.singletonList(Orders.builder()
+                            .price(1_000)
+                            .createdDate(LocalDate.of(2023, 1, 1))
                             .itemName("item " + i)
-                            .price(i*6000)
-                            .createdDate(LocalDate.now().minusDays(1))
-                            .build()
-                    ));
-            users.add(user);
+                            .build()))
+                    .name("test username " + i)
+                    .build());
         }
-        for (int i = 100; i < 200; i++) {
-            Users user = new Users("user"+(i+1),
-                    Collections.singletonList(Orders.builder()
+        for (int i = 0; i < SIZE; i++) {
+            users.add(Users.builder()
+                    .orders(Collections.singletonList(Orders.builder()
+                            .price(200_000)
+                            .createdDate(LocalDate.of(2023, 1, 2))
                             .itemName("item " + i)
-                            .price(i*2000)
-                            .createdDate(LocalDate.now())
-                            .build()
-                    ));
-            users.add(user);
+                            .build()))
+                    .name("test username " + i)
+                    .build());
         }
-        for (int i = 200; i < 300; i++) {
-            Users user = new Users("user"+(i+1),
-                    Collections.singletonList(Orders.builder()
+        for (int i = 0; i < SIZE; i++) {
+            users.add(Users.builder()
+                    .orders(Collections.singletonList(Orders.builder()
+                            .price(300_000)
+                            .createdDate(LocalDate.of(2023, 1, 3))
                             .itemName("item " + i)
-                            .price(i*800)
-                            .createdDate(LocalDate.now().plusDays(2))
-                            .build()
-                    ));
-            users.add(user);
+                            .build()))
+                    .name("test username " + i)
+                    .build());
+        }
+        for (int i = 0; i < SIZE; i++) {
+            users.add(Users.builder()
+                    .orders(Collections.singletonList(Orders.builder()
+                            .price(500_000)
+                            .createdDate(LocalDate.of(2023, 1, 4))
+                            .itemName("item " + i)
+                            .build()))
+                    .name("test username " + i)
+                    .build());
         }
         return users;
     }

@@ -43,8 +43,9 @@ import java.util.Map;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class UsersGradeConfiguration {
-    private final int CHUNK_SIZE = 30;
+public class UsersConfiguration {
+    private final int CHUNK_SIZE = 1000;
+    private final String JOB_NAME = "userJob";
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final EntityManagerFactory entityManagerFactory;
@@ -56,27 +57,29 @@ public class UsersGradeConfiguration {
      * 1. 유저 정보와 주문 정보를 저장하는 saveUserStep 실행
      * 2. 유저의 주문 금액에 맞는 등급을 부여하는 userLevelUpStep 실행
      * 3. date 파라메터가 존재하면 orderStatisticsStep이 실행되고 없다면 실행되지 않는다.
+     *
      * @return the job
      * @throws Exception the exception
      */
-    @Bean
+    @Bean(JOB_NAME)
     public Job usersGradeJob() throws Exception {
-        return this.jobBuilderFactory.get("usersGradeJob")
+        return this.jobBuilderFactory.get(JOB_NAME)
                 .incrementer(new RunIdIncrementer())
                 .start(this.saveUserStep())
                 .next(this.userLevelUpStep())
-                .listener(new UsersGradeItemListener(usersRepository))
+                .listener(new UsersItemListener(usersRepository))
                 .next(new JobParametersDecide("date"))
                 .on(JobParametersDecide.CONTINUE.getName())
                 .to(this.orderStatisticsStep(null))
                 .build()
                 .build();
     }
-    @Bean
+
+    @Bean(JOB_NAME + "_orderStatisticsStep")
     @JobScope
     public Step orderStatisticsStep(@Value("#{jobParameters[date]}") String date) throws Exception {
-        return this.stepBuilderFactory.get("orderStatisticsStep")
-                .<OrderStatistics, OrderStatistics> chunk(CHUNK_SIZE)
+        return this.stepBuilderFactory.get(JOB_NAME + "_orderStatisticsStep")
+                .<OrderStatistics, OrderStatistics>chunk(CHUNK_SIZE)
                 .reader(orderStatisticsReader(date))
                 .writer(orderStatisticsWriter(date))
                 .build();
@@ -84,7 +87,7 @@ public class UsersGradeConfiguration {
 
     private ItemWriter<? super OrderStatistics> orderStatisticsWriter(String date) throws Exception {
         YearMonth yearMonth = YearMonth.parse(date);
-        String fileName = yearMonth.getYear()+"년_"+yearMonth.getMonthValue()+"월_일별_주문_금액.csv";
+        String fileName = yearMonth.getYear() + "년_" + yearMonth.getMonthValue() + "월_일별_주문_금액.csv";
 
         BeanWrapperFieldExtractor<OrderStatistics> fieldExtractor = new BeanWrapperFieldExtractor<>();
         fieldExtractor.setNames(new String[]{"amount", "date"});
@@ -94,12 +97,12 @@ public class UsersGradeConfiguration {
         lineAggregator.setFieldExtractor(fieldExtractor);
 
         FlatFileItemWriter<OrderStatistics> fileItemWriter = new FlatFileItemWriterBuilder<OrderStatistics>()
-                .name("orderStatisticsWriter")
+                .name(JOB_NAME + "_orderStatisticsWriter")
                 .encoding("UTF-8")
-                .resource(new FileSystemResource("output/"+fileName))
+                .resource(new FileSystemResource("output/" + fileName))
                 .lineAggregator(lineAggregator)
                 .headerCallback(writer -> writer.write("총액, 날짜"))
-                .append(true)
+                .append(false)
                 .build();
         fileItemWriter.afterPropertiesSet();
         return fileItemWriter;
@@ -116,7 +119,7 @@ public class UsersGradeConfiguration {
         sortKey.put("created_date", Order.ASCENDING);
 
         JdbcPagingItemReader<OrderStatistics> itemReader = new JdbcPagingItemReaderBuilder<OrderStatistics>()
-                .name("orderStatisticsReader")
+                .name(JOB_NAME + "_orderStatisticsReader")
                 .dataSource(dataSource)
                 .rowMapper((rs, rowNum) -> OrderStatistics.builder()
                         .amount(rs.getString(1))
@@ -134,16 +137,17 @@ public class UsersGradeConfiguration {
         return itemReader;
     }
 
-    @Bean
+    @Bean(JOB_NAME + "_saveUserStep")
     public Step saveUserStep() {
-        return this.stepBuilderFactory.get("saveUserStep")
+        return this.stepBuilderFactory.get(JOB_NAME + "_saveUserStep")
                 .tasklet(new SaveUsersTasklet(usersRepository))
                 .build();
     }
-    @Bean
+
+    @Bean(JOB_NAME + "_userLevelUpStep")
     public Step userLevelUpStep() throws Exception {
-        return this.stepBuilderFactory.get("userLevelUpStep")
-                .<Users, Users>chunk(10)
+        return this.stepBuilderFactory.get(JOB_NAME + "_userLevelUpStep")
+                .<Users, Users>chunk(CHUNK_SIZE)
                 .reader(this.loadUsersData())
                 .processor(this.checkUsersData())
                 .writer(this.fixUsersGradeData())
@@ -152,16 +156,16 @@ public class UsersGradeConfiguration {
 
     private ItemReader<? extends Users> loadUsersData() throws Exception {
         JpaPagingItemReader<Users> jpaPagingItemReader = new JpaPagingItemReaderBuilder<Users>()
-                .name("loadUsersData")
+                .name(JOB_NAME + "_loadUsersData")
                 .entityManagerFactory(entityManagerFactory)
-                .pageSize(10)
+                .pageSize(CHUNK_SIZE)
                 .queryString("select u from Users u")
                 .build();
         jpaPagingItemReader.afterPropertiesSet();
         return jpaPagingItemReader;
     }
 
-    private ItemProcessor<? super Users,? extends Users> checkUsersData() {
+    private ItemProcessor<? super Users, ? extends Users> checkUsersData() {
         return user -> {
             if (user.availableLevelUp())
                 return user;
@@ -169,6 +173,7 @@ public class UsersGradeConfiguration {
             return null;
         };
     }
+
     private ItemWriter<? super Users> fixUsersGradeData() throws Exception {
         return users -> users.forEach(user -> {
             user.levelUp();

@@ -20,8 +20,8 @@ import java.time.LocalDate;
  * description   :
  **/
 @SpringBatchTest
-@ContextConfiguration(classes = {UsersGradeConfiguration.class, TestConfiguration.class})
-class UsersGradeConfigurationTest {
+@ContextConfiguration(classes = {UsersConfiguration.class, TestConfiguration.class})
+class UsersConfigurationTest {
     @Autowired
     private UsersRepository usersRepository;
     @Autowired

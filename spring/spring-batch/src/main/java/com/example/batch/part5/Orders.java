@@ -27,15 +27,4 @@ public class Orders {
     private String itemName;
     private int price;
     private LocalDate createdDate;
-    @ManyToOne
-    @JoinColumn(name = "users_id")
-    private Users users;
-
-    public void setUsers(Users users){
-        this.users = users;
-
-        if(!users.getOrders().contains(this)){
-            users.getOrders().add(this);
-        }
-    }
 }

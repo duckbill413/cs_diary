@@ -17,7 +17,7 @@ import java.util.Date;
  **/
 @Slf4j
 @RequiredArgsConstructor
-public class UsersGradeItemListener {
+public class UsersItemListener {
     private final UsersRepository usersRepository;
     @AfterJob
     public void showJobResult(JobExecution jobExecution){

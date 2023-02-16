@@ -20,7 +20,6 @@ import java.util.List;
 
 @Getter
 @Setter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -32,38 +31,29 @@ public class Users {
     @Enumerated(EnumType.STRING)
     private Level level = Level.NORMAL;
     private LocalDate updatedDate;
-    @OneToMany(mappedBy = "users", cascade = CascadeType.PERSIST)
+    @OneToMany(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
+    @JoinColumn(name = "users_id")
     private List<Orders> orders = new ArrayList<>();
 
     @Builder
     public Users(String name, List<Orders> orders) {
         this.name = name;
         this.orders = orders;
-        orders.forEach(o -> o.setUsers(this));
-
-        updatedDate = LocalDate.now().minusDays(1);
     }
-    private int getTotalPrice(){
+    private int getTotalAmount(){
         return this.orders.stream().mapToInt(Orders::getPrice).sum();
     }
 
     public boolean availableLevelUp() {
-        return Level.availableLevelUp(this.getLevel(), this.getTotalPrice());
+        return Level.availableLevelUp(this.getLevel(), this.getTotalAmount());
     }
 
     public Level levelUp() {
-        Level nextLevel = Level.getNextLevel(this.getTotalPrice());
+        Level nextLevel = Level.getNextLevel(this.getTotalAmount());
 
         this.level = nextLevel;
         this.updatedDate = LocalDate.now();
 
         return nextLevel;
-    }
-
-    public void addOrder(Orders order) {
-        this.orders.add(order);
-        if (order.getUsers() != this) {
-            order.setUsers(this);
-        }
     }
 }
