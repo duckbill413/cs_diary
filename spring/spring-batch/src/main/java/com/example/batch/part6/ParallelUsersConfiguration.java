@@ -13,13 +13,10 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.FlowBuilder;
 import org.springframework.batch.core.job.flow.Flow;
 import org.springframework.batch.core.job.flow.support.SimpleFlow;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
-import org.springframework.batch.core.partition.PartitionHandler;
-import org.springframework.batch.core.partition.support.TaskExecutorPartitionHandler;
 import org.springframework.batch.core.step.tasklet.TaskletStep;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
@@ -57,7 +54,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class ParallelUsersConfiguration {
     private final int CHUNK_SIZE = 1000;
-    private final String JOB_NAME = "parallelPartitionUserJob";
+    private final String JOB_NAME = "parallelUserJob";
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final EntityManagerFactory entityManagerFactory;
@@ -100,7 +97,7 @@ public class ParallelUsersConfiguration {
     @JobScope
     public Flow splitFlow(@Value("#{jobParameters[date]}") String date) throws Exception {
         Flow userLevelUpFlow = new FlowBuilder<SimpleFlow>(JOB_NAME + "_userLevelUpFlow")
-                .start(this.userLevelUpManagerStep())
+                .start(userLevelUpStep())
                 .build();
 
         return new FlowBuilder<SimpleFlow>(JOB_NAME + "_splitFlow")
@@ -179,46 +176,18 @@ public class ParallelUsersConfiguration {
     public Step userLevelUpStep() throws Exception {
         return this.stepBuilderFactory.get(JOB_NAME + "_userLevelUpStep")
                 .<Users, Users>chunk(CHUNK_SIZE)
-                .reader(this.itemReader(null, null))
+                .reader(this.itemReader())
                 .processor(this.itemProcessor())
                 .writer(this.itemWriter())
                 .build();
     }
 
-    @Bean(JOB_NAME + "_userLevelUpStep.manager")
-    public Step userLevelUpManagerStep() throws Exception {
-        return this.stepBuilderFactory.get(JOB_NAME + "_userLevelUpStep.manager")
-                .partitioner(JOB_NAME + "_userLevelUpStep", new UserLevelUpPartitioner(usersRepository))
-                .step(this.userLevelUpStep())
-                .partitionHandler(this.taskExecutorPartitionHandler())
-                .build();
-    }
-
-    @Bean(JOB_NAME + "_taskExecutorPartitionHandler")
-    public PartitionHandler taskExecutorPartitionHandler() throws Exception {
-        TaskExecutorPartitionHandler handler = new TaskExecutorPartitionHandler();
-
-        handler.setStep(this.userLevelUpStep());
-        handler.setTaskExecutor(this.taskExecutor);
-        handler.setGridSize(8);
-
-        return handler;
-    }
-
-    @Bean(JOB_NAME + "_jpaItemReader")
-    @StepScope
-    public JpaPagingItemReader<? extends Users> itemReader(@Value("#{stepExecutionContext[minId]}") Integer minId,
-                                                           @Value("#{stepExecutionContext[maxId]}") Integer maxId) throws Exception {
-        Map<String, Object> parameters = new HashMap<>();
-        parameters.put("minId", minId);
-        parameters.put("maxId", maxId);
-
+    private ItemReader<? extends Users> itemReader() throws Exception {
         JpaPagingItemReader<Users> jpaPagingItemReader = new JpaPagingItemReaderBuilder<Users>()
                 .name(JOB_NAME + "_loadUsersData")
                 .entityManagerFactory(entityManagerFactory)
                 .pageSize(CHUNK_SIZE)
-                .queryString("select u from Users u where u.id between :minId and :maxId")
-                .parameterValues(parameters)
+                .queryString("select u from Users u")
                 .build();
         jpaPagingItemReader.afterPropertiesSet();
         return jpaPagingItemReader;
