@@ -1,9 +1,11 @@
-package com.example.batch.part4.batch;
+package com.example.batch.part6;
 
-import com.example.batch.part5.JobParametersDecide;
-import com.example.batch.part5.OrderStatistics;
+import com.example.batch.part4.batch.SaveUsersTasklet;
+import com.example.batch.part4.batch.UsersItemListener;
 import com.example.batch.part4.model.Users;
 import com.example.batch.part4.model.UsersRepository;
+import com.example.batch.part5.JobParametersDecide;
+import com.example.batch.part5.OrderStatistics;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -11,11 +13,18 @@ import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.JobScope;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
+import org.springframework.batch.core.partition.PartitionHandler;
+import org.springframework.batch.core.partition.support.TaskExecutorPartitionHandler;
+import org.springframework.batch.integration.async.AsyncItemProcessor;
+import org.springframework.batch.integration.async.AsyncItemWriter;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.database.*;
+import org.springframework.batch.item.database.JdbcPagingItemReader;
+import org.springframework.batch.item.database.JpaPagingItemReader;
+import org.springframework.batch.item.database.Order;
 import org.springframework.batch.item.database.builder.JdbcPagingItemReaderBuilder;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.batch.item.file.FlatFileItemWriter;
@@ -26,16 +35,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.task.TaskExecutor;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 /**
  * author        : duckbill413
@@ -45,14 +54,15 @@ import java.util.Map;
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class UsersConfiguration {
+public class AsyncPartitionUsersConfiguration {
     private final int CHUNK_SIZE = 1000;
-    private final String JOB_NAME = "userJob";
+    private final String JOB_NAME = "asyncPartitionUserJob";
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final EntityManagerFactory entityManagerFactory;
     private final UsersRepository usersRepository;
     private final DataSource dataSource;
+    private final TaskExecutor taskExecutor;
 
     /**
      * Users grade job job.
@@ -68,27 +78,26 @@ public class UsersConfiguration {
         return this.jobBuilderFactory.get(JOB_NAME)
                 .incrementer(new RunIdIncrementer())
                 .start(this.saveUserStep())
-                .next(this.userLevelUpStep())
+                .next(this.userLevelUpManagerStep())
                 .listener(new UsersItemListener(usersRepository))
                 .next(new JobParametersDecide("date"))
                 .on(JobParametersDecide.CONTINUE.getName())
-                .to(this.orderStatisticsStep(null, null))
+                .to(this.orderStatisticsStep(null))
                 .build()
                 .build();
     }
 
     @Bean(JOB_NAME + "_orderStatisticsStep")
     @JobScope
-    public Step orderStatisticsStep(@Value("#{jobParameters[date]}") String date,
-                                    @Value("#{jobParameters[path]}") String path) throws Exception {
+    public Step orderStatisticsStep(@Value("#{jobParameters[date]}") String date) throws Exception {
         return this.stepBuilderFactory.get(JOB_NAME + "_orderStatisticsStep")
                 .<OrderStatistics, OrderStatistics>chunk(CHUNK_SIZE)
                 .reader(orderStatisticsReader(date))
-                .writer(orderStatisticsWriter(date, path))
+                .writer(orderStatisticsWriter(date))
                 .build();
     }
 
-    private ItemWriter<? super OrderStatistics> orderStatisticsWriter(String date, String path) throws Exception {
+    private ItemWriter<? super OrderStatistics> orderStatisticsWriter(String date) throws Exception {
         YearMonth yearMonth = YearMonth.parse(date);
         String fileName = yearMonth.getYear() + "년_" + yearMonth.getMonthValue() + "월_일별_주문_금액.csv";
 
@@ -102,7 +111,7 @@ public class UsersConfiguration {
         FlatFileItemWriter<OrderStatistics> fileItemWriter = new FlatFileItemWriterBuilder<OrderStatistics>()
                 .name(JOB_NAME + "_orderStatisticsWriter")
                 .encoding("UTF-8")
-                .resource(new FileSystemResource(path + fileName))
+                .resource(new FileSystemResource("output/" + fileName))
                 .lineAggregator(lineAggregator)
                 .headerCallback(writer -> writer.write("총액, 날짜"))
                 .append(false)
@@ -150,37 +159,73 @@ public class UsersConfiguration {
     @Bean(JOB_NAME + "_userLevelUpStep")
     public Step userLevelUpStep() throws Exception {
         return this.stepBuilderFactory.get(JOB_NAME + "_userLevelUpStep")
-                .<Users, Users>chunk(CHUNK_SIZE)
-                .reader(this.loadUsersData())
-                .processor(this.checkUsersData())
-                .writer(this.fixUsersGradeData())
+                .<Users, Future<Users>>chunk(CHUNK_SIZE)
+                .reader(this.jpaItemReader(null, null))
+                .processor(this.itemProcessor())
+                .writer(this.itemWriter())
                 .build();
     }
 
-    private ItemReader<? extends Users> loadUsersData() throws Exception {
+    @Bean(JOB_NAME + "_userLevelUpStep.manager")
+    public Step userLevelUpManagerStep() throws Exception {
+        return this.stepBuilderFactory.get(JOB_NAME + "_userLevelUpStep.manager")
+                .partitioner(JOB_NAME + "_userLevelUpStep", new UserLevelUpPartitioner(usersRepository))
+                .step(this.userLevelUpStep())
+                .partitionHandler(this.taskExecutorPartitionHandler())
+                .build();
+    }
+
+    @Bean(JOB_NAME + "_taskExecutorPartitionHandler")
+    public PartitionHandler taskExecutorPartitionHandler() throws Exception {
+        TaskExecutorPartitionHandler handler = new TaskExecutorPartitionHandler();
+
+        handler.setStep(this.userLevelUpStep());
+        handler.setTaskExecutor(this.taskExecutor);
+        handler.setGridSize(8);
+
+        return handler;
+    }
+
+    @Bean
+    @StepScope
+    public JpaPagingItemReader<? extends Users> jpaItemReader(@Value("#{stepExecutionContext[minId]}") Integer minId,
+                                                              @Value("#{stepExecutionContext[maxId]}") Integer maxId) throws Exception {
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("minId", minId);
+        parameters.put("maxId", maxId);
+
         JpaPagingItemReader<Users> jpaPagingItemReader = new JpaPagingItemReaderBuilder<Users>()
                 .name(JOB_NAME + "_loadUsersData")
                 .entityManagerFactory(entityManagerFactory)
                 .pageSize(CHUNK_SIZE)
-                .queryString("select u from Users u")
+                .queryString("select u from Users u where u.id between :minId and :maxId")
+                .parameterValues(parameters)
                 .build();
         jpaPagingItemReader.afterPropertiesSet();
         return jpaPagingItemReader;
     }
 
-    private ItemProcessor<? super Users, ? extends Users> checkUsersData() {
-        return user -> {
+    private AsyncItemProcessor<Users, Users> itemProcessor() {
+        ItemProcessor<Users, Users> itemProcessor = user -> {
             if (user.availableLevelUp())
                 return user;
-
             return null;
         };
+
+        AsyncItemProcessor<Users, Users> asyncItemProcessor = new AsyncItemProcessor<>();
+        asyncItemProcessor.setDelegate(itemProcessor);
+        asyncItemProcessor.setTaskExecutor(this.taskExecutor);
+        return asyncItemProcessor;
     }
 
-    private ItemWriter<? super Users> fixUsersGradeData() throws Exception {
-        return users -> users.forEach(user -> {
+    private AsyncItemWriter<Users> itemWriter() throws Exception {
+        ItemWriter<Users> itemWriter = users -> users.forEach(user -> {
             user.levelUp();
             usersRepository.save(user);
         });
+
+        AsyncItemWriter<Users> asyncItemWriter = new AsyncItemWriter<>();
+        asyncItemWriter.setDelegate(itemWriter);
+        return asyncItemWriter;
     }
 }

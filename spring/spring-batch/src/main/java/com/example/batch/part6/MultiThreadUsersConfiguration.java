@@ -1,9 +1,11 @@
-package com.example.batch.part4.batch;
+package com.example.batch.part6;
 
-import com.example.batch.part5.JobParametersDecide;
-import com.example.batch.part5.OrderStatistics;
+import com.example.batch.part4.batch.SaveUsersTasklet;
+import com.example.batch.part4.batch.UsersItemListener;
 import com.example.batch.part4.model.Users;
 import com.example.batch.part4.model.UsersRepository;
+import com.example.batch.part5.JobParametersDecide;
+import com.example.batch.part5.OrderStatistics;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -15,7 +17,9 @@ import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
-import org.springframework.batch.item.database.*;
+import org.springframework.batch.item.database.JdbcPagingItemReader;
+import org.springframework.batch.item.database.JpaPagingItemReader;
+import org.springframework.batch.item.database.Order;
 import org.springframework.batch.item.database.builder.JdbcPagingItemReaderBuilder;
 import org.springframework.batch.item.database.builder.JpaPagingItemReaderBuilder;
 import org.springframework.batch.item.file.FlatFileItemWriter;
@@ -26,33 +30,34 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.task.TaskExecutor;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * author        : duckbill413
  * date          : 2023-02-07
- * description   :
+ * description   : MultiThread
+ *
  **/
 @Slf4j
 @Configuration
 @RequiredArgsConstructor
-public class UsersConfiguration {
+public class MultiThreadUsersConfiguration {
     private final int CHUNK_SIZE = 1000;
-    private final String JOB_NAME = "userJob";
+    private final String JOB_NAME = "multiThreadUserJob";
     private final JobBuilderFactory jobBuilderFactory;
     private final StepBuilderFactory stepBuilderFactory;
     private final EntityManagerFactory entityManagerFactory;
     private final UsersRepository usersRepository;
     private final DataSource dataSource;
+    private final TaskExecutor taskExecutor;
 
     /**
      * Users grade job job.
@@ -72,23 +77,22 @@ public class UsersConfiguration {
                 .listener(new UsersItemListener(usersRepository))
                 .next(new JobParametersDecide("date"))
                 .on(JobParametersDecide.CONTINUE.getName())
-                .to(this.orderStatisticsStep(null, null))
+                .to(this.orderStatisticsStep(null))
                 .build()
                 .build();
     }
 
     @Bean(JOB_NAME + "_orderStatisticsStep")
     @JobScope
-    public Step orderStatisticsStep(@Value("#{jobParameters[date]}") String date,
-                                    @Value("#{jobParameters[path]}") String path) throws Exception {
+    public Step orderStatisticsStep(@Value("#{jobParameters[date]}") String date) throws Exception {
         return this.stepBuilderFactory.get(JOB_NAME + "_orderStatisticsStep")
                 .<OrderStatistics, OrderStatistics>chunk(CHUNK_SIZE)
                 .reader(orderStatisticsReader(date))
-                .writer(orderStatisticsWriter(date, path))
+                .writer(orderStatisticsWriter(date))
                 .build();
     }
 
-    private ItemWriter<? super OrderStatistics> orderStatisticsWriter(String date, String path) throws Exception {
+    private ItemWriter<? super OrderStatistics> orderStatisticsWriter(String date) throws Exception {
         YearMonth yearMonth = YearMonth.parse(date);
         String fileName = yearMonth.getYear() + "년_" + yearMonth.getMonthValue() + "월_일별_주문_금액.csv";
 
@@ -102,7 +106,7 @@ public class UsersConfiguration {
         FlatFileItemWriter<OrderStatistics> fileItemWriter = new FlatFileItemWriterBuilder<OrderStatistics>()
                 .name(JOB_NAME + "_orderStatisticsWriter")
                 .encoding("UTF-8")
-                .resource(new FileSystemResource(path + fileName))
+                .resource(new FileSystemResource("output/" + fileName))
                 .lineAggregator(lineAggregator)
                 .headerCallback(writer -> writer.write("총액, 날짜"))
                 .append(false)
@@ -154,6 +158,8 @@ public class UsersConfiguration {
                 .reader(this.loadUsersData())
                 .processor(this.checkUsersData())
                 .writer(this.fixUsersGradeData())
+                .taskExecutor(this.taskExecutor) // multi thread 를 위해 추가
+                .throttleLimit(8) // 8개의 thread로 chunk를 동시 처리 (default는 4개)
                 .build();
     }
 
