@@ -4,7 +4,6 @@ import com.example.part1mysql.domain.member.dto.RegisterMemberCommand;
 import com.example.part1mysql.domain.member.entity.Member;
 import com.example.part1mysql.domain.member.repository.MemberJdbcRepository;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,7 +15,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MemberWriteService {
     final private MemberJdbcRepository memberJdbcRepository;
-    public Member create(RegisterMemberCommand command) {
+
+    public Member register(RegisterMemberCommand command) {
         /*
             목표 - 회원정보(이메일, 닉네임, 생년월일)을 등록한다.
                 - 닉네임은 10자를 넘길 수 없다.
@@ -28,8 +28,19 @@ public class MemberWriteService {
         var member = Member.builder()
                 .nickname(command.nickname())
                 .email(command.email())
-                .birthDay(command.birthDay())
+                .birthday(command.birthDay())
                 .build();
         return memberJdbcRepository.save(member);
+    }
+
+    public void changeNickname(Long memberId, String nickname) {
+        /*
+        1. 회원 이름을 변경
+        2. 변경 내역을 저장
+         */
+        Member member = memberJdbcRepository.findById(memberId).orElseThrow();
+        member.changeNickname(nickname);
+        memberJdbcRepository.save(member);
+        // TODO: 변경내역 히스토리 저장
     }
 }
