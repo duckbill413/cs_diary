@@ -2,7 +2,9 @@ package com.example.part1mysql.domain.member.service;
 
 import com.example.part1mysql.domain.member.dto.RegisterMemberCommand;
 import com.example.part1mysql.domain.member.entity.Member;
+import com.example.part1mysql.domain.member.entity.MemberNicknameHistory;
 import com.example.part1mysql.domain.member.repository.MemberJdbcRepository;
+import com.example.part1mysql.domain.member.repository.MemberNicknameJdbcRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MemberWriteService {
     final private MemberJdbcRepository memberJdbcRepository;
+    final private MemberNicknameJdbcRepository memberNicknameJdbcRepository;
 
     public Member register(RegisterMemberCommand command) {
         /*
@@ -30,7 +33,10 @@ public class MemberWriteService {
                 .email(command.email())
                 .birthday(command.birthDay())
                 .build();
-        return memberJdbcRepository.save(member);
+
+        var savedMember = memberJdbcRepository.save(member);
+        saveNicknameHistory(savedMember);
+        return savedMember;
     }
 
     public void changeNickname(Long memberId, String nickname) {
@@ -42,5 +48,14 @@ public class MemberWriteService {
         member.changeNickname(nickname);
         memberJdbcRepository.save(member);
         // TODO: 변경내역 히스토리 저장
+        saveNicknameHistory(member);
+    }
+
+    private void saveNicknameHistory(Member member) {
+        var history = MemberNicknameHistory.builder()
+                .memberId(member.getId())
+                .nickname(member.getNickname())
+                .build();
+        memberNicknameJdbcRepository.save(history);
     }
 }

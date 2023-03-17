@@ -1,11 +1,14 @@
 package com.example.part1mysql.controller;
 
 import com.example.part1mysql.domain.member.dto.MemberDto;
+import com.example.part1mysql.domain.member.dto.MemberNicknameHistoryDto;
 import com.example.part1mysql.domain.member.dto.RegisterMemberCommand;
 import com.example.part1mysql.domain.member.service.MemberReadService;
 import com.example.part1mysql.domain.member.service.MemberWriteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * author        : duckbill413
@@ -33,5 +36,9 @@ public class MemberController {
                                     @RequestBody String nickname){
         memberWriteService.changeNickname(id, nickname);
         return memberReadService.getMember(id);
+    }
+    @GetMapping("/{memberId}/nickname-histories")
+    public List<MemberNicknameHistoryDto> getNicknameHistories(@PathVariable Long memberId){
+        return memberReadService.getNicknameHistories(memberId);
     }
 }
