@@ -47,4 +47,8 @@ public class MemberReadService {
                 history.getCreatedAt()
         );
     }
+    public List<MemberDto> getMembers(List<Long> ids){
+        var members = memberJdbcRepository.findAllByIdIn(ids);
+        return members.stream().map(this::toDto).toList();
+    }
 }
