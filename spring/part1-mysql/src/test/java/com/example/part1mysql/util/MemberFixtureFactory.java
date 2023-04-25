@@ -8,6 +8,7 @@ import org.jeasy.random.EasyRandomParameters;
  * author        : duckbill413
  * date          : 2023-03-13
  * description   :
+ * EasyRandom을 사용한 객체 생성 테스트
  **/
 
 public class MemberFixtureFactory {

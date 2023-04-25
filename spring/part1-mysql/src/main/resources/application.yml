@@ -3,7 +3,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: 413730
-    url: jdbc:mysql://127.0.0.1:3306/sns?rewriteBatchedStatements=true&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+    url: jdbc:mysql://127.0.0.1:3306/sns?rewriteBatchedStatements=true&profileSQL=true&logger=Slf4JLogger&maxQuerySizeToLog=999999&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
 logging:
   level:
     org.springframework.jdbc.core: trace

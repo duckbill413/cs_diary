@@ -5,7 +5,7 @@ import com.example.part1mysql.domain.member.dto.MemberNicknameHistoryDto;
 import com.example.part1mysql.domain.member.entity.Member;
 import com.example.part1mysql.domain.member.entity.MemberNicknameHistory;
 import com.example.part1mysql.domain.member.repository.MemberJdbcRepository;
-import com.example.part1mysql.domain.member.repository.MemberNicknameJdbcRepository;
+import com.example.part1mysql.domain.member.repository.MemberNicknameHistoryJdbcRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class MemberReadService {
     private final MemberJdbcRepository memberJdbcRepository;
-    private final MemberNicknameJdbcRepository memberNicknameJdbcRepository;
+    private final MemberNicknameHistoryJdbcRepository memberNicknameHistoryJdbcRepository;
 
     public MemberDto getMember(Long id){
         Member member = memberJdbcRepository.findById(id).orElseThrow();
@@ -33,7 +33,7 @@ public class MemberReadService {
     }
 
     public List<MemberNicknameHistoryDto> getNicknameHistories(Long memberId){
-        return memberNicknameJdbcRepository.findAllByMemberId(memberId)
+        return memberNicknameHistoryJdbcRepository.findAllByMemberId(memberId)
                 .stream()
                 .map(this::toDto)
                 .collect(Collectors.toList());

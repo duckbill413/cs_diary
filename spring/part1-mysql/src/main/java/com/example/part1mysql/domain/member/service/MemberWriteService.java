@@ -4,7 +4,7 @@ import com.example.part1mysql.domain.member.dto.RegisterMemberCommand;
 import com.example.part1mysql.domain.member.entity.Member;
 import com.example.part1mysql.domain.member.entity.MemberNicknameHistory;
 import com.example.part1mysql.domain.member.repository.MemberJdbcRepository;
-import com.example.part1mysql.domain.member.repository.MemberNicknameJdbcRepository;
+import com.example.part1mysql.domain.member.repository.MemberNicknameHistoryJdbcRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class MemberWriteService {
     final private MemberJdbcRepository memberJdbcRepository;
-    final private MemberNicknameJdbcRepository memberNicknameJdbcRepository;
+    final private MemberNicknameHistoryJdbcRepository memberNicknameHistoryJdbcRepository;
 
     public Member register(RegisterMemberCommand command) {
         /*
@@ -56,6 +56,6 @@ public class MemberWriteService {
                 .memberId(member.getId())
                 .nickname(member.getNickname())
                 .build();
-        memberNicknameJdbcRepository.save(history);
+        memberNicknameHistoryJdbcRepository.save(history);
     }
 }

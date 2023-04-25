@@ -76,7 +76,7 @@ public class MemberJdbcRepository {
         return member;
     }
     public List<Member> findAllByIdIn(List<Long> ids){
-        if (ids.isEmpty())
+        if (ids.isEmpty()) // ids가 empty일 경우 issue 발생
             return List.of();
         var sql = String.format("SELECT * FROM %s WHERE id in (:ids)", TABLE);
         var params = new MapSqlParameterSource().addValue("ids", ids);
