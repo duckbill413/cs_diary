@@ -2,11 +2,13 @@ package com.example.part1mysql.domain.post.service;
 
 import com.example.part1mysql.domain.post.dto.DailyPostCount;
 import com.example.part1mysql.domain.post.dto.DailyPostCountRequest;
+import com.example.part1mysql.domain.post.entity.Post;
 import com.example.part1mysql.domain.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -29,4 +31,11 @@ public class PostReadService {
          */
         return postRepository.groupByCreatedDate(request);
     }
+
+    public Page<Post> getPosts(Long memberId, Pageable pageable) {
+        return postRepository.findAllMemberId(memberId, pageable);
+    }
+
+    public Page<Post> getPasts()
+    Long member
 }

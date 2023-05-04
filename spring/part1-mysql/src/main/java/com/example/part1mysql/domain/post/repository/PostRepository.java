@@ -1,17 +1,23 @@
 package com.example.part1mysql.domain.post.repository;
 
+import com.example.part1mysql.domain.util.PageHelper;
 import com.example.part1mysql.domain.post.dto.DailyPostCount;
 import com.example.part1mysql.domain.post.dto.DailyPostCountRequest;
 import com.example.part1mysql.domain.post.entity.Post;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -29,6 +35,13 @@ public class PostRepository {
             new DailyPostCount(rs.getLong("memberId"),
                     rs.getObject("createdDate", LocalDate.class),
                     rs.getLong("count"));
+    final static private RowMapper<Post> POST_ROW_MAPPER = (rs, rowNum) -> Post.builder()
+            .id(rs.getLong("id"))
+            .memberId(rs.getLong("memberId"))
+            .contents(rs.getString("contents"))
+            .createdDate(rs.getObject("createdDate", LocalDate.class))
+            .createdAt(rs.getObject("createdAt", LocalDateTime.class))
+            .build();
 
 
     public Post save(Post post) {
@@ -65,7 +78,36 @@ public class PostRepository {
         var params = new BeanPropertySqlParameterSource(request);
         return namedParameterJdbcTemplate.query(sql, params, DAILY_POST_COUNT_MAPPER);
     }
-    public void bulkInsert(List<Post> posts){
+
+    public Page<Post> findAllMemberId(Long memberId, Pageable pageable) {
+        MapSqlParameterSource params = new MapSqlParameterSource()
+                .addValue("memberId", memberId)
+                .addValue("size", pageable.getPageSize())
+                .addValue("offset", pageable.getOffset());
+
+        var sql = String.format("""
+                SELECT *
+                FROM %s
+                WHERE memberId = :memberId
+                ORDER BY %s
+                LIMIT :size
+                OFFSET :offset""", TABLE, PageHelper.orderBy(pageable.getSort()));
+        List<Post> result = namedParameterJdbcTemplate.query(sql, params, POST_ROW_MAPPER);
+
+        return new PageImpl<>(result, pageable, getCount(memberId));
+    }
+    private Long getCount(Long memberId){
+        var sql = String.format("""
+                SELECT count(*)
+                FROM POST
+                WHERE memberId = :memberId
+                """, TABLE);
+        var param = new MapSqlParameterSource()
+                .addValue("memberId", memberId);
+
+        return namedParameterJdbcTemplate.queryForObject(sql, param, Long.class);
+    }
+    public void bulkInsert(List<Post> posts) {
         var sql = String.format("""
                 INSERT INTO `%s` (memberId, contents, createdDate, createdAt)
                 VALUES (:memberId, :contents, :createdDate, :createdAt)
