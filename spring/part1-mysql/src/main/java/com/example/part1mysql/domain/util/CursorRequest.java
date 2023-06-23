@@ -8,10 +8,15 @@ package com.example.part1mysql.domain.util;
 
 public record CursorRequest(
         Long key,
-        Long size
+        int size
 ) {
-    public static final Long NONE_KEY = -1L;
-    public CursorRequest next(Long key){
+    public static final Long NONE_KEY = -1L; // End Data
+
+    public CursorRequest next(Long key) {
         return new CursorRequest(key, size);
+    }
+
+    public boolean hasKey() {
+        return key != null;
     }
 }

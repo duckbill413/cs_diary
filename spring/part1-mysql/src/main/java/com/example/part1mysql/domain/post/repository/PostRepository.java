@@ -96,10 +96,11 @@ public class PostRepository {
 
         return new PageImpl<>(result, pageable, getCount(memberId));
     }
-    private Long getCount(Long memberId){
+
+    private Long getCount(Long memberId) {
         var sql = String.format("""
                 SELECT count(*)
-                FROM POST
+                FROM %s
                 WHERE memberId = :memberId
                 """, TABLE);
         var param = new MapSqlParameterSource()
@@ -107,6 +108,38 @@ public class PostRepository {
 
         return namedParameterJdbcTemplate.queryForObject(sql, param, Long.class);
     }
+
+    public List<Post> findAllByMemberIdAndOrderByIdDesc(Long memberId, int size) {
+        var sql = String.format("""
+                SELECT *
+                FROM %s
+                WHERE memberId = :memberId
+                ORDER BY id desc
+                LIMIT :size
+                """, TABLE);
+        var params = new MapSqlParameterSource()
+                .addValue("memberId", memberId)
+                .addValue("size", size);
+
+        return namedParameterJdbcTemplate.query(sql, params, POST_ROW_MAPPER);
+    }
+
+    public List<Post> findAllByLessThanIdAndMemberIdAndOrderByIdDesc(Long id, Long memberId, int size) {
+        var sql = String.format("""
+                SELECT *
+                FROM %s
+                WHERE memberId = :memberId and id < :id
+                ORDER BY id desc
+                LIMIT :size
+                """, TABLE);
+        var params = new MapSqlParameterSource()
+                .addValue("id", id)
+                .addValue("memberId", memberId)
+                .addValue("size", size);
+
+        return namedParameterJdbcTemplate.query(sql, params, POST_ROW_MAPPER);
+    }
+
     public void bulkInsert(List<Post> posts) {
         var sql = String.format("""
                 INSERT INTO `%s` (memberId, contents, createdDate, createdAt)
