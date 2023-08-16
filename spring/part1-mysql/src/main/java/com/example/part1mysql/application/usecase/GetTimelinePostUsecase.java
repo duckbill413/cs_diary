@@ -29,7 +29,4 @@ public class GetTimelinePostUsecase {
         List<Long> followingMemberIds = followings.stream().map(Follow::getToMemberId).toList();
         return postReadService.getPosts(followingMemberIds, cursorRequest);
     }
-
-    public static void main(String[] args) {
-    }
 }
