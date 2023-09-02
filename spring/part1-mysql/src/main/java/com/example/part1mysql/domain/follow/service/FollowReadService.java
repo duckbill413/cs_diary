@@ -16,7 +16,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FollowReadService {
     private final FollowJdbcRepository followJdbcRepository;
-    public List<Follow> getFollowings(Long memberId){
+
+    public List<Follow> getFollowings(Long memberId) {
         return followJdbcRepository.findAllByFromMemberId(memberId);
+    }
+    public List<Follow> getFollowers(Long memberId) {
+        return followJdbcRepository.findAllByToMemberId(memberId);
     }
 }

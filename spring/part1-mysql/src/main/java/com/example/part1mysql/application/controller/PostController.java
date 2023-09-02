@@ -1,5 +1,6 @@
 package com.example.part1mysql.application.controller;
 
+import com.example.part1mysql.application.usecase.CreatePostUsecase;
 import com.example.part1mysql.application.usecase.GetTimelinePostUsecase;
 import com.example.part1mysql.domain.post.dto.DailyPostCount;
 import com.example.part1mysql.domain.post.dto.DailyPostCountRequest;
@@ -11,7 +12,6 @@ import com.example.part1mysql.domain.util.CursorRequest;
 import com.example.part1mysql.domain.util.PageCursor;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,11 +29,13 @@ public class PostController {
     private final PostWriteService postWriteService;
     private final PostReadService postReadService;
     private final GetTimelinePostUsecase getTimelinePostUsecase;
+    private final CreatePostUsecase createPostUsecase;
 
     @PostMapping("")
     public Long create(PostCommand command) {
         // FIXME: 회원 인증 및 회원 검증 구현
-        return postWriteService.create(command);
+//        return postWriteService.create(command);
+        return createPostUsecase.execute(command);
     }
 
     @GetMapping("/daily-post-counts")
@@ -78,6 +80,7 @@ public class PostController {
             @PathVariable Long memberId,
             CursorRequest cursorRequest
     ) {
-        return getTimelinePostUsecase.execute(memberId, cursorRequest);
+//        return getTimelinePostUsecase.execute(memberId, cursorRequest);
+        return getTimelinePostUsecase.executeByTimeline(memberId, cursorRequest);
     }
 }

@@ -1,9 +1,9 @@
 package com.example.part1mysql.domain.post.repository;
 
-import com.example.part1mysql.domain.util.PageHelper;
 import com.example.part1mysql.domain.post.dto.DailyPostCount;
 import com.example.part1mysql.domain.post.dto.DailyPostCountRequest;
 import com.example.part1mysql.domain.post.entity.Post;
+import com.example.part1mysql.domain.util.PageHelper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -18,7 +18,6 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -159,8 +158,9 @@ public class PostRepository {
 
         return namedParameterJdbcTemplate.query(sql, params, POST_ROW_MAPPER);
     }
+
     public List<Post> findAllByLessThanIdAndInMemberIdAndOrderByIdDesc(Long id, List<Long> memberIds, int size) {
-        if (memberIds.isEmpty()){
+        if (memberIds.isEmpty()) {
             return List.of();
         }
         var sql = String.format("""
@@ -190,5 +190,20 @@ public class PostRepository {
                 .toArray(SqlParameterSource[]::new);
         // batchUpdate를 사용하여 List를 binding 시킬 수 있다.
         namedParameterJdbcTemplate.batchUpdate(sql, params);
+    }
+
+    public List<Post> findAllByInId(List<Long> postIds) {
+        if (postIds.isEmpty()) {
+            return List.of();
+        }
+        var sql = String.format("""
+                SELECT *
+                FROM %s
+                WHERE id in (:ids)
+                """, TABLE);
+
+        var params = new MapSqlParameterSource()
+                .addValue("ids", postIds);
+        return namedParameterJdbcTemplate.query(sql, params, POST_ROW_MAPPER);
     }
 }

@@ -12,7 +12,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.OptionalLong;
 
 /**
  * author        : duckbill413
@@ -23,6 +22,10 @@ import java.util.OptionalLong;
 @RequiredArgsConstructor
 public class PostReadService {
     private final PostRepository postRepository;
+
+    public List<Post> getPosts(List<Long> ids) {
+        return postRepository.findAllByInId(ids);
+    }
 
     public List<DailyPostCount> getDailyPostCount(DailyPostCountRequest request) {
         /*
@@ -66,6 +69,7 @@ public class PostReadService {
             return postRepository.findAllByInMemberIdAndOrderByIdDesc(memberIds, cursorRequest.size());
         }
     }
+
     private static long getNextKey(List<Post> posts) {
         return posts.stream().mapToLong(Post::getId).min().orElse(CursorRequest.NONE_KEY);
     }
