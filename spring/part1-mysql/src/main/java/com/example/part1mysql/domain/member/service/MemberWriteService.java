@@ -7,6 +7,7 @@ import com.example.part1mysql.domain.member.repository.MemberJdbcRepository;
 import com.example.part1mysql.domain.member.repository.MemberNicknameHistoryJdbcRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * author        : duckbill413
@@ -19,7 +20,10 @@ public class MemberWriteService {
     final private MemberJdbcRepository memberJdbcRepository;
     final private MemberNicknameHistoryJdbcRepository memberNicknameHistoryJdbcRepository;
 
-    public Member register(RegisterMemberCommand command) {
+    // MEMO: Transactional 은 proxy 방식으로 생성됨 inner 함수 호출시 잘 먹지 않는 문제가 있다.
+    // MEMO: Transaction은 커넥션 풀을 점유하기 때문에 최대한 짧게 설정하는 것이 좋다.
+    @Transactional
+    public Member create(RegisterMemberCommand command) {
         /*
             목표 - 회원정보(이메일, 닉네임, 생년월일)을 등록한다.
                 - 닉네임은 10자를 넘길 수 없다.
@@ -38,7 +42,7 @@ public class MemberWriteService {
         saveNicknameHistory(savedMember);
         return savedMember;
     }
-
+    @Transactional
     public void changeNickname(Long memberId, String nickname) {
         /*
         1. 회원 이름을 변경

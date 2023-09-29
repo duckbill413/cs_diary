@@ -23,7 +23,7 @@ public class MemberController {
     private final MemberReadService memberReadService;
     @PostMapping
     public MemberDto register(@RequestBody RegisterMemberCommand command){
-        var member = memberWriteService.register(command);
+        var member = memberWriteService.create(command);
         return memberReadService.toDto(member);
     }
 
