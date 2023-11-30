@@ -2,7 +2,9 @@ package com.example.part1mysql.domain.post.service;
 
 import com.example.part1mysql.domain.post.dto.DailyPostCount;
 import com.example.part1mysql.domain.post.dto.DailyPostCountRequest;
+import com.example.part1mysql.domain.post.dto.PostDto;
 import com.example.part1mysql.domain.post.entity.Post;
+import com.example.part1mysql.domain.post.repository.PostLikeRepository;
 import com.example.part1mysql.domain.post.repository.PostRepository;
 import com.example.part1mysql.domain.util.CursorRequest;
 import com.example.part1mysql.domain.util.PageCursor;
@@ -22,6 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostReadService {
     private final PostRepository postRepository;
+    private final PostLikeRepository postLikeRepository;
 
     public List<Post> getPosts(List<Long> ids) {
         return postRepository.findAllByInId(ids);
@@ -38,8 +41,22 @@ public class PostReadService {
         return postRepository.groupByCreatedDate(request);
     }
 
-    public Page<Post> getPosts(Long memberId, Pageable pageable) {
-        return postRepository.findAllMemberId(memberId, pageable);
+    public Post getPost(Long postId) {
+        return postRepository.findById(postId, false).orElseThrow();
+    }
+
+    public Page<PostDto> getPosts(Long memberId, Pageable pageable) {
+        return postRepository.findAllMemberId(memberId, pageable).map(this::toDto);
+    }
+
+    private PostDto toDto(Post post) {
+        // FIXME: PostDto를 생성할 때마다 조회가 발생하게 된다.
+        return new PostDto(
+                post.getId(),
+                post.getContents(),
+                post.getCreatedAt(),
+                postLikeRepository.count(post.getId())
+        );
     }
 
     public PageCursor<Post> getPosts(Long memberId, CursorRequest cursorRequest) {

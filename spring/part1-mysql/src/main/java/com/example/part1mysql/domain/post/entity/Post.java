@@ -17,15 +17,23 @@ public class Post {
     final private Long id;
     final private Long memberId;
     final private String contents;
+    private Long likeCount;
+    private Long version; // MEMO: 낙관적 락 버전
     final private LocalDate createdDate;
     final private LocalDateTime createdAt;
 
     @Builder
-    public Post(Long id, Long memberId, String contents, LocalDate createdDate, LocalDateTime createdAt) {
+    public Post(Long id, Long memberId, String contents, Long likeCount, Long version, LocalDate createdDate, LocalDateTime createdAt) {
         this.id = id;
         this.memberId = Objects.requireNonNull(memberId);
         this.contents = Objects.requireNonNull(contents);
+        this.likeCount = likeCount == null ? 0 : likeCount;
+        this.version = version == null ? 0 : version;
         this.createdDate = createdDate == null ? LocalDate.now() : createdDate;
         this.createdAt = createdAt == null ? LocalDateTime.now() : createdAt;
+    }
+
+    public void incrementCount() {
+        likeCount += 1;
     }
 }

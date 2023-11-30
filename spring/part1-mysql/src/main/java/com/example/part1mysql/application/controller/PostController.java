@@ -1,10 +1,12 @@
 package com.example.part1mysql.application.controller;
 
+import com.example.part1mysql.application.usecase.CreatePostLikeUsecase;
 import com.example.part1mysql.application.usecase.CreatePostUsecase;
 import com.example.part1mysql.application.usecase.GetTimelinePostUsecase;
 import com.example.part1mysql.domain.post.dto.DailyPostCount;
 import com.example.part1mysql.domain.post.dto.DailyPostCountRequest;
 import com.example.part1mysql.domain.post.dto.PostCommand;
+import com.example.part1mysql.domain.post.dto.PostDto;
 import com.example.part1mysql.domain.post.entity.Post;
 import com.example.part1mysql.domain.post.service.PostReadService;
 import com.example.part1mysql.domain.post.service.PostWriteService;
@@ -30,6 +32,7 @@ public class PostController {
     private final PostReadService postReadService;
     private final GetTimelinePostUsecase getTimelinePostUsecase;
     private final CreatePostUsecase createPostUsecase;
+    private final CreatePostLikeUsecase createPostLikeUsecase;
 
     @PostMapping("")
     public Long create(PostCommand command) {
@@ -52,7 +55,7 @@ public class PostController {
      * @return
      */
     @GetMapping("/members/{memberId}")
-    public Page<Post> getPosts(
+    public Page<PostDto> getPosts(
             @PathVariable Long memberId,
             Pageable pageable
     ) {
@@ -82,5 +85,16 @@ public class PostController {
     ) {
 //        return getTimelinePostUsecase.execute(memberId, cursorRequest);
         return getTimelinePostUsecase.executeByTimeline(memberId, cursorRequest);
+    }
+
+    @PostMapping("/{postId}/like/v1")
+    public void likePost(@PathVariable("postId") Long postId) {
+//        postWriteService.likePost(postId);
+        postWriteService.likePostByOptimisticLock(postId);
+    }
+    @PostMapping("/{postId}/like/v2")
+    public void likePostV2(@PathVariable("postId") Long postId,
+                           @RequestParam("memberId") Long memberId) {
+        createPostLikeUsecase.execute(postId, memberId);
     }
 }

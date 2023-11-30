@@ -2,6 +2,7 @@ package com.example.part1mysql.domain.post.repository;
 
 import com.example.part1mysql.domain.post.dto.DailyPostCount;
 import com.example.part1mysql.domain.post.dto.DailyPostCountRequest;
+import com.example.part1mysql.domain.post.dto.PostDto;
 import com.example.part1mysql.domain.post.entity.Post;
 import com.example.part1mysql.domain.util.PageHelper;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * author        : duckbill413
@@ -41,14 +43,16 @@ public class PostRepository {
             .contents(rs.getString("contents"))
             .createdDate(rs.getObject("createdDate", LocalDate.class))
             .createdAt(rs.getObject("createdAt", LocalDateTime.class))
+            .likeCount(rs.getLong("likeCount"))
+            .version(rs.getLong("version"))
             .build();
 
 
     public Post save(Post post) {
         if (post.getId() == null)
             return insert(post);
-//        return update(post);
-        throw new UnsupportedOperationException("Post는 갱신을 지원하지 않습니다.");
+        return update(post);
+//        throw new UnsupportedOperationException("Post는 갱신을 지원하지 않습니다.");
     }
 
     private Post insert(Post post) {
@@ -205,5 +209,37 @@ public class PostRepository {
         var params = new MapSqlParameterSource()
                 .addValue("ids", postIds);
         return namedParameterJdbcTemplate.query(sql, params, POST_ROW_MAPPER);
+    }
+
+    public Optional<Post> findById(Long postId, Boolean requiredLock) {
+        var sql = String.format("""
+                SELECT * FROM %s WHERE id = :postId
+                """, TABLE);
+        if (requiredLock) {
+            sql += "FOR UPDATE";
+        }
+        var params = new MapSqlParameterSource()
+                .addValue("postId", postId);
+        var nullablePost = namedParameterJdbcTemplate.queryForObject(sql, params, POST_ROW_MAPPER);
+        return Optional.ofNullable(nullablePost);
+    }
+
+    public Post update(Post post) {
+        var sql = String.format("""
+                UPDATE %s set 
+                memberId = :memberId, 
+                contents = :contents, 
+                likeCount = :likeCount,
+                createdDate = :createdDate, 
+                createdAt = :createdAt,
+                version = :version + 1
+                WHERE id = :id AND version = :version
+                """, TABLE);
+
+        var params = new BeanPropertySqlParameterSource(post);
+        var updatedCount = namedParameterJdbcTemplate.update(sql, params);
+        // TODO: RuntimeException 대신 실패 로직 작성
+        if (updatedCount == 0) throw new RuntimeException("갱신 실패");
+        return post;
     }
 }
