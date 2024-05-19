@@ -1,5 +1,7 @@
-package com.polarbookshop.catalogservice.domain;
+package com.polarbookshop.catalogservice.persistence;
 
+import com.polarbookshop.catalogservice.domain.Book;
+import com.polarbookshop.catalogservice.domain.BookRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Map;
