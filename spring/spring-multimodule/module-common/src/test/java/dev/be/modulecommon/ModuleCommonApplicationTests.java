@@ -1,10 +1,10 @@
-package dev.be.mudulecommon;
+package dev.be.modulecommon;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class MuduleCommonApplicationTests {
+class ModuleCommonApplicationTests {
 
     @Test
     void contextLoads() {
