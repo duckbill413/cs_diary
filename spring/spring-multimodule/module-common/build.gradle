@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.2'
     id 'io.spring.dependency-management' version '1.1.5'
+    id 'java-library' // api 선언을 위해서 필요
 }
 
 group = 'dev.be'
@@ -27,6 +28,15 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    /**
+     * api로 선언된 의존성을 소비자의 compile classpath와 runtime classpath를 모두 포함
+     * 반면, implementation 은 내부에서 사용된는 의존성을 선언하는데 사용됩니다.
+     * 즉, implementation 을 사용하여 선언된 의존성은 해당 모듈 내부에서만 사용되고, 다른 모듈에서 노출되지 않는다.
+     * 모듈 내부의 implementation 으로 선언된느 라이브러리의 변경 사항은 다른 모듈에 영향을 주지 않는다.
+     */
+    api 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'mysql:mysql-connector-java'
 }
 
 tasks.named('test') {
