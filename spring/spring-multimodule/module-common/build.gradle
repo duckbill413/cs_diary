@@ -43,5 +43,9 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
-tasks.bootJar { enabled = false }
-tasks.jar { enabled = true }
+tasks.bootJar { enabled = false } // default: true -> common module 은 실행 가능한 jar 파일을 만들 필요 없음
+tasks.jar { enabled = true } // default: true
+// xxx.jar
+// xxx-plain.jar plain으로 생성된 것 dependency를 가지지 않는다. 즉, 클래스와 리소스만을 포함한다. 따라서 서버를 실행 시킬 수 없다.
+// ./gradlew clean :module-api:buildNeeded --stacktrace --info --refresh-dependencies -x test
+// -x test 옵션은 테스트 코드를 체크하는 단계를 스킵하는 옵션

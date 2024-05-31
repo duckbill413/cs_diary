@@ -1,3 +1,5 @@
+profile-name: beta
+
 spring:
   application:
     name: module-api
