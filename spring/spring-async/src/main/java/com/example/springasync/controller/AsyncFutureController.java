@@ -1,6 +1,6 @@
 package com.example.springasync.controller;
 
-import com.example.springasync.service.AsyncService;
+import com.example.springasync.service.AsyncFutureService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,15 +12,14 @@ import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @RestController
-@RequestMapping("/api")
 @RequiredArgsConstructor
-public class ApiController {
+public class AsyncFutureController {
 
-    private final AsyncService asyncService;
+    private final AsyncFutureService asyncFutureService;
 
     @GetMapping("/hello")
     public String hello() throws ExecutionException, InterruptedException {
-        CompletableFuture<String> hello = asyncService.run();
+        CompletableFuture<String> hello = asyncFutureService.run();
         log.info("completable future init");
         return hello.get();
     }
