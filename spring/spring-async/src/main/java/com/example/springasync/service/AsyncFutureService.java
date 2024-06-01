@@ -5,30 +5,38 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.*;
 
 @Slf4j
 @Service
 public class AsyncFutureService {
 
-    public String hello(){
-        for(int i=0; i<5; i++){
+    @Async("async-thread")
+    public Future<String> runCompletableFuture() {
+        log.info("async start running");
+        var result = CompletableFuture.completedFuture(doLogic());
+        log.info("async end!");
+        return result;
+    }
+
+    public String doLogic() {
+        for (int i = 0; i < 5; i++) {
             try {
-                log.info(String.valueOf(i+1));
-                Thread.sleep(2000);
-            }
-            catch (InterruptedException e){
+                log.info("before " + (i + 1));
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
 
-        return "async hello " + LocalDateTime.now();
+        return "future " + LocalDateTime.now();
     }
-    @Async("async-thread")
-    public CompletableFuture<String> run() throws ExecutionException, InterruptedException {
-        log.info("now running");
-        return CompletableFuture.completedFuture(hello());
-//        return new AsyncResult(hello()).completable(); // Deprecated
+
+    public String doDuring() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < 5; i++) {
+            sb.append("after ").append(i).append(", ");
+        }
+        return sb.toString();
     }
 }
