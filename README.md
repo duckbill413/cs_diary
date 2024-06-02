@@ -7,6 +7,8 @@ Java, Spring을 실습해 보는 공간입니다.
 - Filter, Interceptor, AOP
 - Swagger
 - JUnit
+- Async (비동기 프로그래밍)
+- Multi Module
 
 ## JPA
 - JPA
