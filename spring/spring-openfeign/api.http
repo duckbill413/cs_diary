@@ -1,3 +1,2 @@
 # GET request
-GET http://localhost:8080/get?name=duckbill&age=23
-CustomHeaderName: hihi
+GET http://localhost:8080/get
