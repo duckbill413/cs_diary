@@ -2,9 +2,8 @@ package wh.duckbill.openfeign.feign.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import wh.duckbill.openfeign.feign.common.dto.BaseRequestInfo;
 import wh.duckbill.openfeign.feign.common.dto.BaseResponseInfo;
 import wh.duckbill.openfeign.feign.config.DemoFeignConfig;
 
@@ -19,4 +18,8 @@ public interface DemoFeignClient {
     ResponseEntity<BaseResponseInfo> callGet(@RequestHeader("CustomHeaderName") String customHeader,
                                              @RequestParam("name") String name,
                                              @RequestParam("age") Long age);
+
+    @PostMapping("/post")
+    ResponseEntity<BaseResponseInfo> callPost(@RequestHeader("CustomHeaderName") String customHeader,
+                                              @RequestBody BaseRequestInfo baseRequestInfo);
 }

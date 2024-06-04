@@ -10,7 +10,12 @@ import wh.duckbill.openfeign.service.DemoService;
 public class DemoController {
     private final DemoService demoService;
     @GetMapping("/get")
-    public String getContent() {
+    public String getController() {
         return demoService.get();
+    }
+
+    @GetMapping("/post")
+    public String postController() {
+        return demoService.post();
     }
 }

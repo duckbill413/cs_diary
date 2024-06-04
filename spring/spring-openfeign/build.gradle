@@ -27,6 +27,7 @@ ext {
      * 위에서 현재 Spring 버전과 호환 되는 springCloudVersion 을 찾아 설정해 준다.
      */
     set('springCloudVersion', "2023.0.2")
+    set('commonsLangVersion', '3.12.0')
 }
 
 dependencyManagement {
@@ -45,6 +46,9 @@ dependencies {
 
     // open feign
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    // StringUtils 사용을 위한 라이브러리 설치
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-lang3
+    implementation "org.apache.commons:commons-lang3:${commonsLangVersion}"
 }
 
 tasks.named('test') {
