@@ -32,6 +32,6 @@ public class DemoService {
         System.out.println("Name: " + response.getBody().getName());
         System.out.println("Age: " + response.getBody().getAge());
         System.out.println("Header: " + response.getBody().getHeader());
-        return "get";
+        return "post";
     }
 }
