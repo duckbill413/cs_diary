@@ -1,5 +1,7 @@
 package wh.duckbill.openfeign.controller;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import wh.duckbill.openfeign.feign.common.dto.BaseRequestInfo;
 import wh.duckbill.openfeign.feign.common.dto.BaseResponseInfo;
@@ -26,5 +28,10 @@ public class TargetController {
                 .name(body.getName())
                 .age(body.getAge())
                 .build();
+    }
+
+    @GetMapping("/error")
+    public ResponseEntity<BaseResponseInfo> demoErrorDecoder() {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 }
