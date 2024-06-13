@@ -30,11 +30,11 @@ public class FeignCustomLogger extends Logger { // Feign의 Logger인지 확인
 
     /**
      *
-     * @param configKey
-     * @param logLevel
-     * @param response
+     * @param configKey Feign Client의 특정 메서드에 대한 식별자
+     * @param logLevel 로깅 레벨. Feign Logger의 Level enum을 사용하여 설정 (NONE, BASIC, HEADERS, FULL)
+     * @param response 원본 Feign response 객체
      * @param elapsedTime 응답 시간
-     * @return
+     * @return 재 버퍼링된 Response 객체
      * @throws IOException
      */
     @Override
