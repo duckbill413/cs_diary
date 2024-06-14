@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!-- 부모 logback xml 파일 -->
+<!--기존 Spring의 default logback 설정이 아래로 덮어 쓰여짐 -->
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <!-- spring profile 에 따라 다른 logback 설정이 필요 -->
+    <include resource="logback-spring-${spring.profiles.active}.xml"/>
+</configuration>
