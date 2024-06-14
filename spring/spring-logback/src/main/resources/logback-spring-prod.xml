@@ -98,6 +98,23 @@
         </encoder>
     </appender>
 
+    <appender name="QUERY1" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>
+            ${LOG_DIR}/query.log
+        </file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_DIR}/archive/query.%d{yyyy-MM-dd}_%i.log</fileNamePattern>
+            <maxFileSize>10KB</maxFileSize> <!-- 로그 파일 최대 크기 -->
+            <maxHistory>30</maxHistory> <!-- 로그 파일 최대 보관 주기 (단위: 일) -->
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>
+                [QUERY] ${LOG_PATTERN}
+            </pattern>
+            <outputPatternAsHeader>true</outputPatternAsHeader>
+        </encoder>
+    </appender>
+
     <root level="INFO">
         <appender-ref ref="REQUEST1"/>
         <appender-ref ref="REQUEST2"/>
@@ -105,4 +122,13 @@
         <appender-ref ref="WARN"/>
         <appender-ref ref="ERROR"/>
     </root>
+
+    <!-- additivity 는 상위 로거의 속성 들로 merge 할 것인가 지정 -->
+    <logger name="SQL_LOG1" level="INFO" additivity="false">
+        <appender-ref ref="QUERY1"/>
+    </logger>
+
+    <logger name="SQL_LOG2" level="INFO" additivity="false">
+        <appender-ref ref="QUERY1"/>
+    </logger>
 </included>
