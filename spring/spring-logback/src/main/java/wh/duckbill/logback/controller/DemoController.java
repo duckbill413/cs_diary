@@ -9,10 +9,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class DemoController {
     @GetMapping("/demo")
     public String demo() {
-        log.trace("trace");
-        log.debug("debug");
-        log.info("info");
-        log.error("error");
+        log.trace("log --> trace");
+        log.debug("log --> debug");
+        log.info("log --> info");
+        log.warn("log --> warn");
+        log.error("log --> error");
         return "demo";
     }
 }
