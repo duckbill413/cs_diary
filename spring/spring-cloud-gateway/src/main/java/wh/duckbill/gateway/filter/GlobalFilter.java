@@ -29,7 +29,7 @@ public class GlobalFilter extends AbstractGatewayFilterFactory<GlobalFilter.Conf
                 log.info("Global Filter Start: request id -> {}", request.getId());
             }
 
-            // Custom Post Filter
+            // Global Post Filter
             return chain.filter(exchange).then(Mono.fromRunnable(() -> {
                 if (config.isPostLogger()) {
                     log.info("Global Filter End: response code -> {}", response.getStatusCode());
