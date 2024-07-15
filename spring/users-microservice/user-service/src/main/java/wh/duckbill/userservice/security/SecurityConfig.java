@@ -1,4 +1,4 @@
-package wh.duckbill.userservice.config;
+package wh.duckbill.userservice.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +19,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize ->
                         authorize.requestMatchers("/users/**").permitAll()
                                 .requestMatchers("/h2-console/**").permitAll()
+                                .anyRequest().authenticated()
                 )
                 .headers(configurer -> configurer.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable));
         return http.build();
