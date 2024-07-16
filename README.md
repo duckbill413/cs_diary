@@ -19,6 +19,8 @@ Java, Spring을 실습해 보는 공간입니다.
 - N+1
 
 ## Spring Cloud
+- Eureka
+- Gateway
 
 ## Spring Batch
 - Job, Step
