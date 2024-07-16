@@ -23,7 +23,28 @@ spring:
         - id: user-service
           uri: lb://USER-SERVICE
           predicates:
+            - Path=/user-service/login # 로그인 요청
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie # POST 요청의 Header 를 삭제하여 새로운 데이터로 인식
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
+            - Path=/user-service/users # 회원가입 요청
+            - Method=POST
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+        - id: user-service
+          uri: lb://USER-SERVICE
+          predicates:
             - Path=/user-service/**
+            - Method=GET
+          filters:
+            - RemoveRequestHeader=Cookie
+            - RewritePath=/user-service/(?<segment>.*), /$\{segment}
+            - AuthorizationHeaderFilter
         - id: catalog-service
           uri: lb://CATALOG-SERVICE/**
           predicates:
@@ -32,3 +53,7 @@ spring:
           uri: lb://ORDER-SERVICE/**
           predicates:
             - Path=/order-service/**
+
+token:
+  expiration_time: 86400000
+  secret: jGCgrTB9PGo7dtQCjOC18iCNQNlW8PWooUKb0k5GgSFUGMDKT2
