@@ -2,8 +2,9 @@ from pymongo import MongoClient
 from pymongo.read_preferences import ReadPreference
 import certifi
 
-conn = "mongodb+srv://duckbill:Hkug0AtjqWc7gGEG@cluster0.6mmuwjy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
-conn = "mongodb+srv://duckbill:Hkug0AtjqWc7gGEG@cluster0.6mmuwjy.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0&readPreference=secondary" # readPreference=secondary 옵션 추가
+mongo_uri = "mongo db connection uri"
+conn = mongo_uri
+conn = mongo_uri + "&readPreference=secondary" # readPreference=secondary 옵션 추가
 
 client = MongoClient(conn, tlsCaFile=certifi.where())
 db = client.test
