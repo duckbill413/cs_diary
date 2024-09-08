@@ -25,3 +25,4 @@ hs_err_pid*
 # 폴더
 /spring/spring-kafka-producer/*
 .vscode/*
+mongodb/4.02_Read Preference.py
