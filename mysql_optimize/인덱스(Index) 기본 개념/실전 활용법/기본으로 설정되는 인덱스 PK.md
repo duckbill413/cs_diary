@@ -19,7 +19,7 @@ CREATE TABLE users (
 
     SELECT * FROM users;
     ```
-    ![alt text](index-pk1.png)
+    ![alt text](../../images/index-pk1.png)
 2. `id`가 `7`인 값을 `2`로 변경
     ```sql
     UPDATE users
@@ -28,7 +28,7 @@ CREATE TABLE users (
 
     SELECT * FROM users;
     ```
-    ![alt text](index-pk2.png)
+    ![alt text](../../images/index-pk2.png)
     - 여전히 `id` 컬럼을 기준으로 정렬되어 있는 채로 데이터가 조회된다.
     - `PK`는 인덱스의 일종이기 때문
     - 이렇게 **원본 데이터 자체가 정렬되는 인덱스**를 **클러스터링 인덱스**라고 한다.

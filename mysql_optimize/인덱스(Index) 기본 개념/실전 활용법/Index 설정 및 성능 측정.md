@@ -42,7 +42,7 @@
    ```
 
 4. SQL 실행시 걸리는 시간 측정
-   ![SQL TIME LATE](<select 성능 확인.jpg>)
+   ![SQL TIME LATE](../../images/select%20성능%20확인.jpg)
 
    - 대략 `520ms` 소요
 
@@ -64,7 +64,7 @@
    SELECT * FROM users
    WHERE age = 23;
    ```
-   ![index 성능 확인](<index 성능 확인.png>)
+   ![index 성능 확인](../../images/index%20성능%20확인.png)
    - `22ms` 소요 기존 (`520ms`) 보다 확연하게 성능이 향상됨
 
 - index 직접 생성하게 되면 인덱스 표가 내부적으로 생성됨
