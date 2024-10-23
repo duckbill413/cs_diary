@@ -134,3 +134,193 @@ FROM cte;
 - `WHERE`문의 `부등호(<, >, <=, >=, =)`, `IN`, `BETWEEN`, `LIKE`와 같은 곳에서 사용되는 컬럼은 인덱스를 사용했을 때 성능이 향상될 가능성이 높다.
 
 ## WHERE 문이 사용된 SQL문 튜닝하기 - 2
+- Sales 부서이면서 최근 3일 이내에 가입한 유저 조회하기
+1. 테이블 생성
+    ```sql
+    DROP TABLE IF EXISTS users; 
+
+    CREATE TABLE users (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        name VARCHAR(100),
+        department VARCHAR(100),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    ```
+2. 100만건의 랜덤 데이터 삽입
+    ```sql
+    -- 높은 재귀(반복) 횟수를 허용하도록 설정
+    -- (아래에서 생성할 더미 데이터의 개수와 맞춰서 작성하면 된다.)
+    SET SESSION cte_max_recursion_depth = 1000000; 
+
+    -- 더미 데이터 삽입 쿼리
+    INSERT INTO users (name, department, created_at)
+    WITH RECURSIVE cte (n) AS
+    (
+    SELECT 1
+    UNION ALL
+    SELECT n + 1 FROM cte WHERE n < 1000000 -- 생성하고 싶은 더미 데이터의 개수
+    )
+    SELECT 
+        CONCAT('User', LPAD(n, 7, '0')) AS name,  -- 'User' 다음에 7자리 숫자로 구성된 이름 생성
+        CASE 
+            WHEN n % 10 = 1 THEN 'Engineering'
+            WHEN n % 10 = 2 THEN 'Marketing'
+            WHEN n % 10 = 3 THEN 'Sales'
+            WHEN n % 10 = 4 THEN 'Finance'
+            WHEN n % 10 = 5 THEN 'HR'
+            WHEN n % 10 = 6 THEN 'Operations'
+            WHEN n % 10 = 7 THEN 'IT'
+            WHEN n % 10 = 8 THEN 'Customer Service'
+            WHEN n % 10 = 9 THEN 'Research and Development'
+            ELSE 'Product Management'
+        END AS department,  -- 의미 있는 단어 조합으로 부서 이름 생성
+        TIMESTAMP(DATE_SUB(NOW(), INTERVAL FLOOR(RAND() * 3650) DAY) + INTERVAL FLOOR(RAND() * 86400) SECOND) AS created_at -- 최근 10년 내의 임의의 날짜와 시간 생성
+    FROM cte;
+
+    -- 잘 생성됐는 지 확인
+    SELECT COUNT(*) FROM users;
+    SELECT * FROM users LIMIT 10;
+    ```
+3. 데이터 조회해서 성능 측정하기
+    ```sql
+    SELECT * FROM users
+    WHERE department = 'Sales'
+    AND created_at >= DATE_SUB(NOW(), INTERVAL 3 DAY)
+    ```
+    - 약 `620ms`의 시간 소요
+4. 실행 계획 조회해보기
+    ```sql
+    # 실행 계획
+    EXPLAIN SELECT * FROM users
+    WHERE department = 'Sales'
+    AND created_at >= DATE_SUB(NOW(), INTERVAL 3 DAY);
+
+    # 실행 계획 세부 내용
+    EXPLAIN ANALYZE SELECT * FROM users
+    WHERE department = 'Sales'
+    AND created_at >= DATE_SUB(NOW(), INTERVAL 3 DAY);
+    ```
+    - 실행 계획 결과
+        ![alt text](./images/optimize-where-2_1.png)
+        - `type`이 `ALL`인 것으로 보아 `Full Table Scan`이 발생
+    - 실행 계획 세부 내용 결과
+        ```
+        -> Filter: ((users.department = 'Sales') and (users.created_at >= <cache>((now() - interval 3 day))))  (cost=93877 rows=33224) (actual time=0.936..831 rows=118 loops=1)
+        -> Table scan on users  (cost=93877 rows=996810) (actual time=0.0664..624 rows=1e+6 loops=1)
+        ```
+        - `EXPLAIN ANALYZE`는 아래부터 읽어야 한다.
+        - 엑세스한 100만개의 데이터 중 `department='Sales'`와 `created_at>=DATE_SUB(NOW(), INTERVAL 3 DAY)`을 만족하는 데이터를 필터링
+          - 조건을 만족하는 데이터 `rows`는 118개
+        - `users` 데이터 100만개를 읽는데는 `624ms`가 소요 되었으며, `filtering`작업에는 `831 - 624 = 207ms`가 소요됨
+5. 성능 개선을 위한 인덱스 추가
+    1. `created_at` 컬럼을 기준으로 인덱스 생성
+    2. `department` 컬럼을 기준으로 인덱스 생성
+    3. `department`, `created_at` 둘 다 인덱스 생성
+    
+    **실습**
+    1. `created_at` 컬럼을 기준으로 인덱스 생성
+        ```sql
+        CREATE INDEX idx_created_at ON users (created_at);
+
+        # 성능 측정
+        SELECT * FROM users
+        WHERE department = 'Sales'
+        AND created_at >= DATE_SUB(NOW(), INTERVAL 3 DAY);
+
+        # 실행 계획
+        EXPLAIN SELECT * FROM users
+        WHERE department = 'Sales'
+        AND created_at >= DATE_SUB(NOW(), INTERVAL 3 DAY);
+
+        # 실행 계획 세부 내용
+        EXPLAIN ANALYZE SELECT * FROM users
+        WHERE department = 'Sales'
+        AND created_at >= DATE_SUB(NOW(), INTERVAL 3 DAY);
+        ```
+        ![alt text](./images/optimize-where-2_2.png)
+        - 기존 `620ms`에서 `30ms`로 큰 성능 개선이 이루어짐
+        
+        ![alt text](./images/optimize-where-2_3.png)
+        - `type=range`, `rows=1083`으로 실행 계획도 변화함
+      
+        ```
+        -> Filter: (users.department = 'Sales')  (cost=488 rows=108) (actual time=0.107..3.92 rows=118 loops=1)
+        -> Index range scan on users using idx_created_at over ('2024-10-20 23:35:25' <= created_at), with index condition: (users.created_at >= <cache>((now() - interval 3 day)))  (cost=488 rows=1083) (actual time=0.0352..3.84 rows=1083 loops=1)
+        ```
+        1. `idx_created_at` 인덱스를 활용해 `range scan`을 했음
+            - `created_at >= DATE_SUB(NOW(), INTERVAL 3 DAY)`을 만족하는 데이터를 조회
+            - 이때, 엑세스한 데이터의 개수가 `1083`개
+        2. 엑세스한 `1083`개의 데이터 중 `users.department='Sales'`을 만족하는 데이터를 필터링
+            - 만족하는 데이터의 수는 `118`개이다.
+    2. `department` 컬럼을 기준으로 인덱스 생성
+        ```sql
+        # created_at 인덱스 삭제
+        ALTER TABLE users DROP INDEX idx_created_at; # 기존 created_at 
+
+        # department 속성에 대한 인덱스 생성
+        CREATE INDEX idx_department ON users (department);
+
+        # 성능 측정
+        SELECT * FROM users
+        WHERE department = 'Sales'
+        AND created_at >= DATE_SUB(NOW(), INTERVAL 3 DAY);
+
+        # 실행 계획
+        EXPLAIN SELECT * FROM users
+        WHERE department = 'Sales'
+        AND created_at >= DATE_SUB(NOW(), INTERVAL 3 DAY);
+
+        # 실행 계획 세부 내용
+        EXPLAIN ANALYZE SELECT * FROM users
+        WHERE department = 'Sales'
+        AND created_at >= DATE_SUB(NOW(), INTERVAL 3 DAY);
+        ```
+        ![alt text](./images/optimize-where-2_4.png)
+        - 기존 `620ms` 보다 조금 향상되어 `500ms` 정도가 되었다.
+
+        ![alt text](./images/optimize-where-2_5.png)
+        - `type=ref` 즉, 비고유 인덱스로 조회를 했다는 것을 알 수 있음
+        - `rows=191314`로 크게 잡혀 있음. 즉, 데이터에 191,314번 엑세스 했다는 의미로 성능에 악영향을 주고 있다.
+
+        ```
+        -> Filter: (users.created_at >= <cache>((now() - interval 3 day)))  (cost=8900 rows=63765) (actual time=1.19..534 rows=118 loops=1)
+        -> Index lookup on users using idx_department (department='Sales')  (cost=8900 rows=191314) (actual time=0.621..494 rows=100000 loops=1)
+        ```
+        1. `idx_department` 인덱스를 활용하여 `department='Sales'`를 만족하는 데이터를 조회 (1,000,000개 엑세스)
+        2. 엑세스한 1,000,000개의 데이터 중 `created_at >= DATE_SUB(NOW(), INTERVAL 3 DAY)`를 만족하는 데이터 `rows=118`개를 조회
+3. `created_at`, `department` 컬럼 둘 다 인덱스 생성
+    ```sql
+    # 위에서 이미 추가함
+    # CREATE INDEX idx_department ON users (department);
+
+    # 인덱스 추가
+    CREATE INDEX idx_created_at ON users (created_at); # created_at 
+
+    # 성능 측정
+    SELECT * FROM users
+    WHERE department = 'Sales'
+    AND created_at >= DATE_SUB(NOW(), INTERVAL 3 DAY);
+
+    # 실행 계획
+    EXPLAIN SELECT * FROM users
+    WHERE department = 'Sales'
+    AND created_at >= DATE_SUB(NOW(), INTERVAL 3 DAY);
+
+    # 실행 계획 세부 내용
+    EXPLAIN ANALYZE SELECT * FROM users
+    WHERE department = 'Sales'
+    AND created_at >= DATE_SUB(NOW(), INTERVAL 3 DAY);
+    ```
+    ![alt text](./images/optimize-where-2_6.png)
+    - 약, `30ms`로 조회 성능이 측정됨
+
+    ![alt text](./images/optimize-where-2_7.png)
+    - `possible_keys`로 `department`, `created_at`의 인덱스가 검색되었으나 실제로 사용된 index는 `created_at` index 이다.
+
+    ```
+    -> Filter: (users.department = 'Sales')  (cost=485 rows=207) (actual time=0.0437..3.84 rows=118 loops=1)
+    -> Index range scan on users using idx_created_at over ('2024-10-20 23:53:21' <= created_at), with index condition: (users.created_at >= <cache>((now() - interval 3 day)))  (cost=485 rows=1078) (actual time=0.0314..3.76 rows=1078 loops=1)
+    ```
+    - `created_at` 컬럼의 인덱스를 사용한 결과와 같다.
+
+- 따라서, 실질적으로 성능 향상에 큰 효과가 있는 `created_at` 컬럼에 한해서는 인덱스를 생성하는게 효율적이다.
