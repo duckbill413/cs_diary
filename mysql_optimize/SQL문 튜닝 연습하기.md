@@ -3,6 +3,7 @@
   - [한 번에 너무 많은 데이터를 조회하는 SQL문 튜닝하기](#한-번에-너무-많은-데이터를-조회하는-sql문-튜닝하기)
   - [WHERE 문이 사용된 SQL문 튜닝하기 - 1](#where-문이-사용된-sql문-튜닝하기---1)
   - [WHERE 문이 사용된 SQL문 튜닝하기 - 2](#where-문이-사용된-sql문-튜닝하기---2)
+    - [멀티 컬럼 인덱스 고려하기](#멀티-컬럼-인덱스-고려하기)
 
 ## 한 번에 너무 많은 데이터를 조회하는 SQL문 튜닝하기
 1. 테이블 생성
@@ -324,3 +325,52 @@ FROM cte;
     - `created_at` 컬럼의 인덱스를 사용한 결과와 같다.
 
 - 따라서, 실질적으로 성능 향상에 큰 효과가 있는 `created_at` 컬럼에 한해서는 인덱스를 생성하는게 효율적이다.
+
+### 멀티 컬럼 인덱스 고려하기
+1. `(created_at, department)` 멀티 컬럼 인덱스 생성
+    ```sql
+    # 기존의 인덱스 삭제
+    ALTER TABLE users DROP INDEX idx_created_at;
+    ALTER TABLE users DROP INDEX idx_department;
+
+    # 멀티 컬럼 인덱스 생성
+    CREATE INDEX idx_created_at_department ON users (created_at, department);
+
+    SELECT * FROM users
+    WHERE department = 'Sales'
+    AND created_at >= DATE_SUB(NOW(), INTERVAL 3 DAY);
+
+    # 실행 계획
+    EXPLAIN SELECT * FROM users
+    WHERE department = 'Sales'
+    AND created_at >= DATE_SUB(NOW(), INTERVAL 3 DAY);
+    ```
+    ![alt text](./images/optimize-where-2_8.png)
+    - 약 `25ms`의 성능 개선이 이루어짐
+
+    ![alt text](./images/optimize-where-2_9.png)
+
+2. `(department, created_at)` 멀티 컬럼 인덱스 생성
+    ```sql
+    # 기존의 인덱스 삭제
+    ALTER TABLE users DROP INDEX idx_created_at_department;
+
+    # 멀티 컬럼 인덱스 생성
+    CREATE INDEX idx_department_created_at ON users (department, created_at);
+
+    SELECT * FROM users
+    WHERE department = 'Sales'
+    AND created_at >= DATE_SUB(NOW(), INTERVAL 3 DAY);
+
+    # 실행 계획
+    EXPLAIN SELECT * FROM users
+    WHERE department = 'Sales'
+    AND created_at >= DATE_SUB(NOW(), INTERVAL 3 DAY);
+    ```
+    ![alt text](./images/optimize-where-2_10.png)
+    - 약 `25ms`의 성능 개선이 이루어짐
+
+    ![alt text](./images/optimize-where-2_11.png)
+
+    - 두가지의 멀티 컬럼 인덱스를 설정해 봤지만, `created_at` 인덱스만 걸었을 때와 크게 성능 차이가 없다.
+    - 이런 경우는 굳이 멀티 컬럼 인덱스를 사용하기 보다는 단일 컬럼에서 인덱스를 적용하는게 좋다.
