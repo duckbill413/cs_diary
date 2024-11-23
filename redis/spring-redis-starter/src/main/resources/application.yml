@@ -1,1 +1,7 @@
-spring.application.name=spring-redis-starter
+spring:
+  application:
+    name: redis-starter
+  data:
+    redis:
+      host: localhost
+      port: 6379
