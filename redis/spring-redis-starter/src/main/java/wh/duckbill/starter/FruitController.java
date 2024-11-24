@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class HelloController {
+public class FruitController {
     private final RedisTemplate<String, String> redisTemplate;
 
-    public HelloController(RedisTemplate<String, String> redisTemplate) {
+    public FruitController(RedisTemplate<String, String> redisTemplate) {
         this.redisTemplate = redisTemplate;
     }
 
