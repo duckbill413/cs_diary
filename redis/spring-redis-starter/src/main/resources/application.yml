@@ -1,6 +1,10 @@
 spring:
   application:
     name: redis-starter
+  session:
+    redis:
+      namespace: spring:session
+      flush-mode: on-save
   data:
     redis:
       host: localhost
