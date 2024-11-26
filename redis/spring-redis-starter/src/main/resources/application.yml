@@ -5,6 +5,8 @@ spring:
     redis:
       namespace: spring:session
       flush-mode: on-save
+  cache:
+    type: redis
   data:
     redis:
       host: localhost
