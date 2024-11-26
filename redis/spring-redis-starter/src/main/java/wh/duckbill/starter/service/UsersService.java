@@ -15,7 +15,7 @@ public class UsersService {
     private final StringRedisTemplate redisTemplate;
 
     public UserProfile getUserProfile(String userId) {
-        String userName = null;
+        String userName;
 
         ValueOperations<String, String> ops = redisTemplate.opsForValue();
         String cachedName = ops.get("nameKey:" + userId);
