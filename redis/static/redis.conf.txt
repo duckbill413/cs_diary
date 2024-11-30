@@ -443,8 +443,8 @@ locale-collate ""
 # You can set these explicitly by uncommenting the following line.
 #
 # save 3600 1 300 100 60 10000
-# 실습1
-save 60 10
+# 실습RDB1
+save 60 10 #실습AOF1: 현재 라인을 주석처리 하시오
 
 # By default Redis will stop accepting writes if RDB snapshots are enabled
 # (at least one save point) and the latest background save failed.
@@ -1397,7 +1397,8 @@ disable-thp yes
 #
 # Please check https://redis.io/docs/latest/operate/oss_and_stack/management/persistence/ for more information.
 
-appendonly no
+#실습AOF2 (RDB 사용시 `no`로 설정)
+appendonly yes 
 
 # The base name of the append only file.
 #
@@ -1424,6 +1425,7 @@ appendonly no
 # - appendonly.aof.1.incr.aof, appendonly.aof.2.incr.aof as incremental files.
 # - appendonly.aof.manifest as a manifest file.
 
+#실습AOF3 AOF 파일 이름
 appendfilename "appendonly.aof"
 
 # For convenience, Redis stores all persistent append-only files in a dedicated
@@ -1455,6 +1457,7 @@ appenddirname "appendonlydir"
 #
 # If unsure, use "everysec".
 
+# 실습AOF4 fsync 정책 설정
 # appendfsync always
 appendfsync everysec
 # appendfsync no
