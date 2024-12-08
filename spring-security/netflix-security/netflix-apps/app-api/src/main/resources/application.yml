@@ -3,3 +3,4 @@ spring:
     import:
       - 'classpath:adapter-http-property.yml'
       - 'classpath:./secrets/adapter-http-tmdb-key.yml'
+      - 'classpath:adapter-persistence-property.yml'
