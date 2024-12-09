@@ -8,10 +8,12 @@ import wh.duckbill.netflix.sample.response.SampleResponse;
 @RequiredArgsConstructor
 public class SampleService implements SearchSampleUsecase {
     private final SamplePort samplePort;
+    private final SamplePersistencePort samplePersistencePort;
 
     @Override
     public SampleResponse getSample() {
         SamplePortResponse sample = samplePort.getSample();
+        String sampleName = samplePersistencePort.getSampleName("1");
         return new SampleResponse(sample.getName());
     }
 }
