@@ -18,6 +18,6 @@ public class SampleEntity {
     private String sampleId;
     @Column(name = "SAMPLE_NAME")
     private String sampleName;
-    @Column(name = "SAMPLE_DESCRIPTION")
+    @Column(name = "SAMPLE_DESC")
     private String sampleDescription;
 }

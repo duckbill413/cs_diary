@@ -40,3 +40,11 @@
         ...
     }
     ```
+
+### Flyway 파일 생성 패턴
+[Flyway 파일 예제](./netflix-adapters/adapter-persistence/src/main/resources/flyway)
+1. `resources` 폴더에 `flyway` 폴더를 생성
+2. 버전을 처리를 위해 `V1` 을 붙임 (1에서 부터 증가)
+3. 뒤에는 언더바를 두개 추가 (`__`)
+4. 이후 생성하는 sql 파일의 이름을 추가
+5. 결과적으로 `V1__init.sql` 이라는 `flyway` 설정 파일을 생성
