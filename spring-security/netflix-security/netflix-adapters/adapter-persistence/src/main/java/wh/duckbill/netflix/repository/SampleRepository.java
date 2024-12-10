@@ -16,6 +16,7 @@ public class SampleRepository implements SamplePersistencePort {
     @Transactional
     @Override
     public String getSampleName(String id) {
+        sampleJpaRepository.findAllByABC();
         Optional<SampleEntity> byId = sampleJpaRepository.findById(id);
         return byId.map(SampleEntity::getSampleName).orElseThrow();
     }

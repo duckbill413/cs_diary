@@ -13,7 +13,7 @@ import java.util.List;
 public class SampleCustomRepositoryImpl implements SampleCustomRepository {
     private final JPAQueryFactory queryFactory;
     @Override
-    public List<SampleEntity> findAll() {
+    public List<SampleEntity> findAllByABC() {
         return queryFactory.selectFrom(QSampleEntity.sampleEntity)
                 .fetch();
     }

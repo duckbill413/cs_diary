@@ -4,3 +4,4 @@ spring:
       - 'classpath:adapter-http-property.yml'
       - 'classpath:./secrets/adapter-http-tmdb-key.yml'
       - 'classpath:adapter-persistence-property.yml'
+      - 'classpath:adapter-redis-property.yml'
