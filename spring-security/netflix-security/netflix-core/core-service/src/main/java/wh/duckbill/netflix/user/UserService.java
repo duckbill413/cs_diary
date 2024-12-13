@@ -2,6 +2,7 @@ package wh.duckbill.netflix.user;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import wh.duckbill.netflix.exception.UserException;
 import wh.duckbill.netflix.user.command.UserResponse;
 
 import java.util.Optional;
@@ -15,7 +16,7 @@ public class UserService implements FetchUserUsecase {
     public UserResponse findUserByEmail(String email) {
         Optional<UserPortResponse> byEmail = fetchUserPort.findByEmail(email);
         if (byEmail.isEmpty()) {
-            throw new RuntimeException();
+            throw new UserException.UserDoesNotExistException();
         }
 
         UserPortResponse userPortResponse = byEmail.get();

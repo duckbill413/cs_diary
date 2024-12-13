@@ -1,5 +1,6 @@
 dependencies {
     implementation(project(":netflix-core:core-usecase"))
+    implementation(project(":netflix-commons"))
 
     runtimeOnly(project(":netflix-core:core-service"))
 

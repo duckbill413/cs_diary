@@ -1,4 +1,4 @@
-package wh.duckbill.netflix.sample;
+package wh.duckbill.netflix.controller.sample;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
