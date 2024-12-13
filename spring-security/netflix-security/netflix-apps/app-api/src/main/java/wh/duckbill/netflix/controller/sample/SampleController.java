@@ -3,6 +3,7 @@ package wh.duckbill.netflix.controller.sample;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+import wh.duckbill.netflix.sample.SearchSampleUsecase;
 import wh.duckbill.netflix.sample.response.SampleResponse;
 
 @RestController
