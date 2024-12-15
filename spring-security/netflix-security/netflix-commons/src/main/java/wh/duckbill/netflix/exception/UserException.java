@@ -13,4 +13,10 @@ public class UserException extends RuntimeException {
             super(ErrorCode.USER_DOES_NOT_EXIST);
         }
     }
+
+    public static class UserAlreadyExistsException extends UserException {
+        public UserAlreadyExistsException() {
+            super(ErrorCode.USER_ALREADY_EXIST);
+        }
+    }
 }

@@ -21,39 +21,40 @@ import java.util.Collections;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final NetflixUserDetailsService netflixUserDetailsService;
+  private final NetflixUserDetailsService netflixUserDetailsService;
 
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.httpBasic(AbstractHttpConfigurer::disable);
-        http.formLogin(AbstractHttpConfigurer::disable);
-        http.csrf(AbstractHttpConfigurer::disable);
-        http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http.httpBasic(AbstractHttpConfigurer::disable);
+    http.formLogin(AbstractHttpConfigurer::disable);
+    http.csrf(AbstractHttpConfigurer::disable);
+    http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
 
-        http.userDetailsService(netflixUserDetailsService);
+    http.userDetailsService(netflixUserDetailsService);
 
-        http.authorizeHttpRequests(auth ->
-                auth.anyRequest().authenticated());
+    http.authorizeHttpRequests(auth ->
+        auth.requestMatchers("/api/v1/user/register").permitAll()
+            .anyRequest().authenticated());
 
-        http.oauth2Login(oauth2 ->
-                oauth2.failureUrl("/login?error=true"));
+//    http.oauth2Login(oauth2 ->
+//        oauth2.failureUrl("/login?error=true"));
 
-        return http.build();
-    }
+    return http.build();
+  }
 
-    private CorsConfigurationSource corsConfigurationSource() {
-        return request -> {
-            CorsConfiguration configuration = new CorsConfiguration();
-            configuration.setAllowedHeaders(Collections.singletonList("*"));
-            configuration.setAllowedMethods(Collections.singletonList("*"));
-            configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
-            configuration.setAllowCredentials(true);
-            return configuration;
-        };
-    }
+  private CorsConfigurationSource corsConfigurationSource() {
+    return request -> {
+      CorsConfiguration configuration = new CorsConfiguration();
+      configuration.setAllowedHeaders(Collections.singletonList("*"));
+      configuration.setAllowedMethods(Collections.singletonList("*"));
+      configuration.setAllowedOriginPatterns(Collections.singletonList("*"));
+      configuration.setAllowCredentials(true);
+      return configuration;
+    };
+  }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
+  @Bean
+  public PasswordEncoder passwordEncoder() {
+    return new BCryptPasswordEncoder();
+  }
 }

@@ -1,4 +1,4 @@
-package sample;
+package wh.duckbill.netflix.sample;
 
 import lombok.Getter;
 
