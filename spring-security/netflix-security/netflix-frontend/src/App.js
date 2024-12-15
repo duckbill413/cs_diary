@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {BrowserRouter as Router, Link, Route, Routes} from 'react-router-dom';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import Dashboard from "./pages/Dashboard";
 import ProtectedRoute from "./ProtectedRoute";
 import Main from "./pages/Main";
@@ -34,6 +35,7 @@ function App() {
   return (
     <Router>
       <div>
+        {/* 상단 네비게이션 바 */}
         <nav className="navbar navbar-expand-lg navbar-light bg-light">
           <div className="container">
             <Link className="navbar-brand" to="/">Netflix</Link>
