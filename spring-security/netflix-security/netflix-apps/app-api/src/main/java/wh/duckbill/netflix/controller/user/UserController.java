@@ -22,7 +22,7 @@ public class UserController {
     UserRegisterationResponse register = registerUserUsecase.register(
         UserRegisterationCommand.builder()
             .username(request.getUsername())
-            .encryptedPassword(passwordEncoder.encode(request.getPassword()))
+            .encryptedPassword(request.getPassword())
             .email(request.getEmail())
             .phone(request.getPhone())
             .build()
