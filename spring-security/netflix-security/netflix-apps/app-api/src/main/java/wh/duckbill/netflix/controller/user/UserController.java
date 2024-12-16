@@ -15,6 +15,8 @@ import wh.duckbill.netflix.user.RegisterUserUsecase;
 import wh.duckbill.netflix.user.command.UserRegisterationCommand;
 import wh.duckbill.netflix.user.response.UserRegisterationResponse;
 
+import java.util.Map;
+
 @RestController
 @RequiredArgsConstructor
 public class UserController {
@@ -35,7 +37,7 @@ public class UserController {
     return NetflixApiResponse.ok(register);
   }
 
-  @PostMapping("/api/v1/auth/login")
+  @PostMapping("/api/v1/user/login")
   public NetflixApiResponse<String> login(@RequestBody UserLoginRequest request) {
     String email = request.getEmail();
     String password = request.getPassword();
@@ -45,5 +47,11 @@ public class UserController {
 
     NetflixAuthUser principal = (NetflixAuthUser) authenticate.getPrincipal();
     return NetflixApiResponse.ok("access-token");
+  }
+
+  @PostMapping("/api/v1/user/callback")
+  public NetflixApiResponse<String> kakaoCallback(@RequestBody Map<String, String> request) {
+    String code = request.get("code");
+    return NetflixApiResponse.ok(null);
   }
 }

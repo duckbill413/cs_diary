@@ -35,11 +35,12 @@ public class SecurityConfig {
     http.authorizeHttpRequests(auth ->
         auth.requestMatchers(
                 "/api/v1/user/register",
-                "/api/v1/auth/login").permitAll()
+                "/api/v1/user/login",
+                "/api/v1/user/callback").permitAll()
             .anyRequest().authenticated());
 
-//    http.oauth2Login(oauth2 ->
-//        oauth2.failureUrl("/login?error=true"));
+    http.oauth2Login(oauth2 ->
+        oauth2.failureUrl("/login?error=true"));
 
     return http.build();
   }
