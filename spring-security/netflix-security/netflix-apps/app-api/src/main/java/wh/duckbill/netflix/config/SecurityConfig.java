@@ -33,7 +33,9 @@ public class SecurityConfig {
     http.userDetailsService(netflixUserDetailsService);
 
     http.authorizeHttpRequests(auth ->
-        auth.requestMatchers("/api/v1/user/register").permitAll()
+        auth.requestMatchers(
+                "/api/v1/user/register",
+                "/api/v1/auth/login").permitAll()
             .anyRequest().authenticated());
 
 //    http.oauth2Login(oauth2 ->

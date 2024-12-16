@@ -1,5 +1,6 @@
 package wh.duckbill.netflix.security;
 
+import io.micrometer.common.util.StringUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,19 +15,18 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class NetflixUserDetailsService implements UserDetailsService {
-    private final FetchUserUsecase fetchUserUsecase;
+  private final FetchUserUsecase fetchUserUsecase;
 
-
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        UserResponse userByEmail = fetchUserUsecase.findUserByEmail(email);
-        return new NetflixAuthUser(
-                userByEmail.getUserId(),
-                userByEmail.getUsername(),
-                userByEmail.getPassword(),
-                userByEmail.getEmail(),
-                userByEmail.getPhone(),
-                List.of(new SimpleGrantedAuthority(userByEmail.getRole()))
-        );
-    }
+  @Override
+  public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+    UserResponse userByEmail = fetchUserUsecase.findUserByEmail(email);
+    return new NetflixAuthUser(
+        userByEmail.getUserId(),
+        userByEmail.getUsername(),
+        userByEmail.getPassword(),
+        userByEmail.getEmail(),
+        userByEmail.getPhone(),
+        List.of(new SimpleGrantedAuthority(StringUtils.isEmpty(userByEmail.getRole()) ? "-" : userByEmail.getRole()))
+    );
+  }
 }
