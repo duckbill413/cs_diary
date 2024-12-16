@@ -1,4 +1,4 @@
-package wh.duckbill.netflix.entity;
+package wh.duckbill.netflix.entity.sample;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

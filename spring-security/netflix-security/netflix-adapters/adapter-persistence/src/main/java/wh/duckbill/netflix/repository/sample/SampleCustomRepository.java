@@ -1,6 +1,6 @@
-package wh.duckbill.netflix.repository;
+package wh.duckbill.netflix.repository.sample;
 
-import wh.duckbill.netflix.entity.SampleEntity;
+import wh.duckbill.netflix.entity.sample.SampleEntity;
 
 import java.util.List;
 

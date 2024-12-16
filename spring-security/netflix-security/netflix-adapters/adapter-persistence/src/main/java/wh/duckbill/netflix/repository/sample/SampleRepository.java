@@ -1,9 +1,9 @@
-package wh.duckbill.netflix.repository;
+package wh.duckbill.netflix.repository.sample;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import wh.duckbill.netflix.entity.SampleEntity;
+import wh.duckbill.netflix.entity.sample.SampleEntity;
 import wh.duckbill.netflix.sample.SamplePersistencePort;
 
 import java.util.Optional;
