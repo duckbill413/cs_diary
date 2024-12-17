@@ -3,6 +3,7 @@ package wh.duckbill.netflix.repository.token;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import wh.duckbill.netflix.entity.token.TokenEntity;
 import wh.duckbill.netflix.token.InsertTokenPort;
 import wh.duckbill.netflix.token.SearchTokenPort;
 import wh.duckbill.netflix.token.TokenPortResponse;
@@ -18,18 +19,29 @@ public class TokenRepository implements SearchTokenPort, InsertTokenPort, Update
   @Transactional
   @Override
   public TokenPortResponse create(String userId, String accessToken, String refreshToken) {
-    return null;
+    TokenEntity entity = TokenEntity.newTokenEntity(userId, accessToken, refreshToken);
+    tokenJpaRepository.save(entity);
+    return new TokenPortResponse(accessToken, refreshToken);
   }
 
   @Transactional(readOnly = true)
   @Override
-  public Optional<TokenPortResponse> findByUserId(String userId) {
-    return Optional.empty();
+  public TokenPortResponse findByUserId(String userId) {
+    return tokenJpaRepository.findByUserId(userId)
+        .map(result -> new TokenPortResponse(result.getAccessToken(), result.getRefreshToken()))
+        .orElseThrow();
   }
 
   @Transactional
   @Override
   public void updateToken(String userId, String accessToken, String refreshToken) {
+    Optional<TokenEntity> byUserId = tokenJpaRepository.findByUserId(userId);
+    if (byUserId.isEmpty()) {
+      throw new RuntimeException();
+    }
 
+    TokenEntity entity = byUserId.get();
+    entity.updateToken(accessToken, refreshToken);
+    tokenJpaRepository.save(entity);
   }
 }

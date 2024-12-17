@@ -53,7 +53,7 @@ public class TokenEntity extends MutableBaseEntity {
     this.refreshTokenExpiresAt = getRefreshTokenExpiredAt(now);
   }
 
-  public static TokenEntity toEntity(
+  public static TokenEntity newTokenEntity(
       String userId,
       String accessToken,
       String refreshToken

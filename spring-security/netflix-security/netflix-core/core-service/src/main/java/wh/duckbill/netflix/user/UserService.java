@@ -36,6 +36,11 @@ public class UserService implements FetchUserUsecase, RegisterUserUsecase {
   }
 
   @Override
+  public UserResponse findByProviderId(String userId) {
+    return null;
+  }
+
+  @Override
   public UserRegisterationResponse register(UserRegisterationCommand command) {
     String email = command.getEmail();
     // 사용자 조회
