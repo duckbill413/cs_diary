@@ -12,6 +12,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class UserService implements FetchUserUsecase, RegisterUserUsecase {
+  private final KakaoUserPort kakaoUserPort;
   private final FetchUserPort fetchUserPort;
   private final InsertUserPort insertUserPort;
 
@@ -38,6 +39,16 @@ public class UserService implements FetchUserUsecase, RegisterUserUsecase {
   @Override
   public UserResponse findByProviderId(String userId) {
     return null;
+  }
+
+  @Override
+  public UserResponse findKakaoUser(String accessToken) {
+    UserPortResponse userFromKakao = kakaoUserPort.findUserFromKakao(accessToken);
+    return UserResponse.builder()
+        .provider(userFromKakao.getProvider())
+        .providerId(userFromKakao.getProviderId())
+        .username(userFromKakao.getUsername())
+        .build();
   }
 
   @Override

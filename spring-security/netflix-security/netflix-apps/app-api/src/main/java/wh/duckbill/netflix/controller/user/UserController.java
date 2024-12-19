@@ -12,8 +12,10 @@ import wh.duckbill.netflix.controller.user.request.UserLoginRequest;
 import wh.duckbill.netflix.controller.user.request.UserRegisterRequest;
 import wh.duckbill.netflix.security.NetflixAuthUser;
 import wh.duckbill.netflix.token.FetchTokenUsecase;
+import wh.duckbill.netflix.user.FetchUserUsecase;
 import wh.duckbill.netflix.user.RegisterUserUsecase;
 import wh.duckbill.netflix.user.command.UserRegisterationCommand;
+import wh.duckbill.netflix.user.command.UserResponse;
 import wh.duckbill.netflix.user.response.UserRegisterationResponse;
 
 import java.util.Map;
@@ -24,6 +26,7 @@ public class UserController {
   private final RegisterUserUsecase registerUserUsecase;
   private final AuthenticationManagerBuilder authenticationManagerBuilder;
   private final FetchTokenUsecase fetchTokenUsecase;
+  private final FetchUserUsecase fetchUserUsecase;
 
   @PostMapping("/api/v1/user/register")
   public NetflixApiResponse<UserRegisterationResponse> register(@RequestBody UserRegisterRequest request) {
@@ -56,6 +59,7 @@ public class UserController {
     String code = request.get("code");
 
     String accessTokenFromKakao = fetchTokenUsecase.getTokenFromKakao(code);
+    UserResponse kakaoUser = fetchUserUsecase.findKakaoUser(accessTokenFromKakao);
     return NetflixApiResponse.ok(null);
   }
 }
