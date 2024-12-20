@@ -3,7 +3,9 @@ package wh.duckbill.netflix.repository.user;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import wh.duckbill.netflix.entity.user.SocialUserEntity;
 import wh.duckbill.netflix.entity.user.UserEntity;
+import wh.duckbill.netflix.repository.user.social.SocialUserJpaRepository;
 import wh.duckbill.netflix.user.CreateUser;
 import wh.duckbill.netflix.user.FetchUserPort;
 import wh.duckbill.netflix.user.InsertUserPort;
@@ -15,6 +17,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserRepository implements FetchUserPort, InsertUserPort {
   private final UserJpaRepository userJpaRepository;
+  private final SocialUserJpaRepository socialUserJpaRepository;
 
   @Transactional(readOnly = true)
   @Override
@@ -26,6 +29,22 @@ public class UserRepository implements FetchUserPort, InsertUserPort {
         .username(userEntity.getUsername())
         .email(userEntity.getEmail())
         .phone(userEntity.getPhone())
+        .build());
+  }
+
+  @Override
+  public Optional<UserPortResponse> findByProviderId(String providerId) {
+    Optional<SocialUserEntity> byProviderId = socialUserJpaRepository.findByProviderId(providerId);
+    if (byProviderId.isEmpty()) {
+      return Optional.empty();
+    }
+
+    SocialUserEntity socialUserEntity = byProviderId.get();
+
+    return Optional.of(UserPortResponse.builder()
+        .provider(socialUserEntity.getProvider())
+        .providerId(socialUserEntity.getProviderId())
+        .username(socialUserEntity.getUsername())
         .build());
   }
 
@@ -47,6 +66,18 @@ public class UserRepository implements FetchUserPort, InsertUserPort {
         .password(save.getPassword())
         .email(save.getEmail())
         .phone(save.getPhone())
+        .build();
+  }
+
+  @Transactional
+  @Override
+  public UserPortResponse createSocialUser(String username, String provider, String providerId) {
+    SocialUserEntity socialUserEntity = new SocialUserEntity(username, provider, providerId);
+    socialUserJpaRepository.save(socialUserEntity);
+    return UserPortResponse.builder()
+        .provider(socialUserEntity.getProvider())
+        .providerId(socialUserEntity.getProviderId())
+        .username(socialUserEntity.getUsername())
         .build();
   }
 }
