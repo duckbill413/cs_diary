@@ -22,6 +22,7 @@ import java.util.Date;
 @Service
 @RequiredArgsConstructor
 public class TokenService implements CreateTokenUsecase, FetchTokenUsecase, UpdateTokenUsecase {
+  private final UpdateTokenUsecase updateTokenUsecase;
   @Value("${jwt.secret}")
   private String secretKey;
   private final InsertTokenPort insertTokenPort;
@@ -96,5 +97,19 @@ public class TokenService implements CreateTokenUsecase, FetchTokenUsecase, Upda
   private SecretKey getSigningKey() {
     byte[] keyBytes = Decoders.BASE64.decode(secretKey);
     return Keys.hmacShaKeyFor(keyBytes);
+  }
+
+  @Override
+  public String upsertToken(String providerId) {
+    TokenPortResponse byUserId = searchTokenPort.findByUserId(providerId);
+    String accessToken = getTokenFromKakao(providerId);
+    String refreshToken = getTokenFromKakao(providerId);
+    if (byUserId == null) {
+      insertTokenPort.create(providerId, accessToken, refreshToken);
+      return accessToken;
+    } else {
+      updateTokenPort.updateToken(providerId, accessToken, refreshToken);
+    }
+    return accessToken;
   }
 }
