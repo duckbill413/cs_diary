@@ -2,6 +2,7 @@ package wh.duckbill.netflix.auth;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -18,13 +19,18 @@ import javax.crypto.SecretKey;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class TokenService implements CreateTokenUsecase, FetchTokenUsecase, UpdateTokenUsecase {
-  private final UpdateTokenUsecase updateTokenUsecase;
   @Value("${jwt.secret}")
   private String secretKey;
+  @Value("${jwt.expire.access-token}")
+  private Integer accessTokenExpireHour;
+  @Value("${jwt.expire.refresh-token}")
+  private Integer refreshTokenExpireHour;
+
   private final InsertTokenPort insertTokenPort;
   private final UpdateTokenPort updateTokenPort;
   private final SearchTokenPort searchTokenPort;
@@ -33,8 +39,8 @@ public class TokenService implements CreateTokenUsecase, FetchTokenUsecase, Upda
 
   @Override
   public TokenResponse createNewToken(String userId) {
-    String accessToken = getToken(userId, Duration.ofHours(3));
-    String refreshToken = getToken(userId, Duration.ofHours(24));
+    String accessToken = getToken(userId, Duration.ofHours(accessTokenExpireHour));
+    String refreshToken = getToken(userId, Duration.ofHours(refreshTokenExpireHour));
 
     TokenPortResponse tokenPortResponse = insertTokenPort.create(userId, accessToken, refreshToken);
     return TokenResponse.builder()
@@ -63,12 +69,10 @@ public class TokenService implements CreateTokenUsecase, FetchTokenUsecase, Upda
 
     Object userId = claims.get("userId");
     if (ObjectUtils.isEmpty(userId)) {
-      throw new RuntimeException();
+      throw new RuntimeException("권한 정보가 없는 토큰 입니다.");
     }
 
-    UserResponse byProviderId = fetchUserUsecase.findByProviderId((String) userId);
-
-    return null;
+    return fetchUserUsecase.findByProviderId((String) userId);
   }
 
   private Claims parseClaims(String accessToken) {
@@ -100,16 +104,41 @@ public class TokenService implements CreateTokenUsecase, FetchTokenUsecase, Upda
   }
 
   @Override
-  public String upsertToken(String providerId) {
-    TokenPortResponse byUserId = searchTokenPort.findByUserId(providerId);
-    String accessToken = getTokenFromKakao(providerId);
-    String refreshToken = getTokenFromKakao(providerId);
-    if (byUserId == null) {
-      insertTokenPort.create(providerId, accessToken, refreshToken);
-      return accessToken;
-    } else {
-      updateTokenPort.updateToken(providerId, accessToken, refreshToken);
+  public TokenResponse upsertToken(String userId) {
+    return searchTokenPort.findByUserId(userId)
+        .map(token -> updateNewToken(userId))
+        .orElseGet(() -> createNewToken(userId));
+  }
+
+  @Override
+  public TokenResponse updateNewToken(String userId) {
+    String accessToken = getToken(userId, Duration.ofHours(accessTokenExpireHour));
+    String refreshToken = getToken(userId, Duration.ofHours(refreshTokenExpireHour));
+    updateTokenPort.updateToken(userId, accessToken, refreshToken);
+    return TokenResponse.builder()
+        .accessToken(accessToken)
+        .refreshToken(refreshToken)
+        .build();
+  }
+
+  @Override
+  public TokenResponse reissueToken(String accessToken, String refreshToken) {
+    Jws<Claims> claimsJws = Jwts.parser()
+        .setSigningKey(secretKey)
+        .build()
+        .parseClaimsJws(accessToken);
+
+    String userId = (String) claimsJws.getPayload().get("userId");
+    Optional<TokenPortResponse> byUserId = searchTokenPort.findByUserId(userId);
+    if (byUserId.isEmpty()) {
+      throw new RuntimeException("토큰이 유효하지 않습니다.");
     }
-    return accessToken;
+
+    TokenPortResponse tokenPortResponse = byUserId.get();
+    if (!tokenPortResponse.getRefreshToken().equals(refreshToken)) {
+      throw new RuntimeException("리프레시 토큰이 유효하지 않습니다.");
+    }
+
+    return updateNewToken(userId);
   }
 }

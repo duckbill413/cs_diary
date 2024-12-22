@@ -505,4 +505,3 @@ $RECYCLE.BIN/
 
 # End of https://www.toptal.com/developers/gitignore/api/windows,macos,java,gradle,intellij+all,eclipse,react,reactnative
 /infra/db/
-/netflix-adapters/adapter-http/src/main/resources/secrets/

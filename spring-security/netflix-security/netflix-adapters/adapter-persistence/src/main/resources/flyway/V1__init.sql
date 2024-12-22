@@ -42,3 +42,19 @@ CREATE TABLE `netflix`.`tokens`
 
     PRIMARY KEY (TOKEN_ID)
 );
+
+DROP TABLE IF EXISTS `netflix`.`social_users`;
+CREATE TABLE `netflix`.`social_users`
+(
+    SOCIAL_USER_ID          VARCHAR(255) NOT NULL,
+    USER_NAME               VARCHAR(255) NOT NULL,
+    PROVIDER                VARCHAR(255) NOT NULL,
+    PROVIDER_ID             VARCHAR(255) NOT NULL,
+
+    CREATED_AT               DATETIME     NOT NULL COMMENT '생성일자',
+    CREATED_BY               VARCHAR(50)  NOT NULL COMMENT '생성자',
+    MODIFIED_AT              DATETIME     NOT NULL COMMENT '수정일자',
+    MODIFIED_BY              VARCHAR(50)  NOT NULL COMMENT '수정자',
+
+    PRIMARY KEY (SOCIAL_USER_ID)
+);

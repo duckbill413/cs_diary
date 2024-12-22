@@ -1,5 +1,7 @@
 package wh.duckbill.netflix.token;
 
+import java.util.Optional;
+
 public interface SearchTokenPort {
-  TokenPortResponse findByUserId(String userId);
+  Optional<TokenPortResponse> findByUserId(String userId);
 }

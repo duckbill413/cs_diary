@@ -9,6 +9,7 @@ import wh.duckbill.netflix.token.SearchTokenPort;
 import wh.duckbill.netflix.token.TokenPortResponse;
 import wh.duckbill.netflix.token.UpdateTokenPort;
 
+import java.util.Objects;
 import java.util.Optional;
 
 @Repository
@@ -26,10 +27,9 @@ public class TokenRepository implements SearchTokenPort, InsertTokenPort, Update
 
   @Transactional(readOnly = true)
   @Override
-  public TokenPortResponse findByUserId(String userId) {
+  public Optional<TokenPortResponse> findByUserId(String userId) {
     return tokenJpaRepository.findByUserId(userId)
-        .map(result -> new TokenPortResponse(result.getAccessToken(), result.getRefreshToken()))
-        .orElseThrow();
+        .map(token -> new TokenPortResponse(token.getAccessToken(), token.getRefreshToken()));
   }
 
   @Transactional

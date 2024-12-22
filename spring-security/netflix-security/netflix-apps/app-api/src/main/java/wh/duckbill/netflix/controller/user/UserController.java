@@ -1,5 +1,7 @@
 package wh.duckbill.netflix.controller.user;
 
+import io.micrometer.common.util.StringUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -11,9 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 import wh.duckbill.netflix.controller.NetflixApiResponse;
 import wh.duckbill.netflix.controller.user.request.UserLoginRequest;
 import wh.duckbill.netflix.controller.user.request.UserRegisterRequest;
+import wh.duckbill.netflix.exception.ErrorCode;
 import wh.duckbill.netflix.security.NetflixAuthUser;
 import wh.duckbill.netflix.token.FetchTokenUsecase;
 import wh.duckbill.netflix.token.UpdateTokenUsecase;
+import wh.duckbill.netflix.token.response.TokenResponse;
 import wh.duckbill.netflix.user.FetchUserUsecase;
 import wh.duckbill.netflix.user.RegisterUserUsecase;
 import wh.duckbill.netflix.user.command.UserRegisterationCommand;
@@ -46,7 +50,7 @@ public class UserController {
   }
 
   @PostMapping("/api/v1/user/login")
-  public NetflixApiResponse<String> login(@RequestBody UserLoginRequest request) {
+  public NetflixApiResponse<TokenResponse> login(@RequestBody UserLoginRequest request) {
     String email = request.getEmail();
     String password = request.getPassword();
 
@@ -54,11 +58,23 @@ public class UserController {
     Authentication authenticate = authenticationManagerBuilder.getObject().authenticate(token);
 
     NetflixAuthUser principal = (NetflixAuthUser) authenticate.getPrincipal();
-    return NetflixApiResponse.ok("access-token");
+    TokenResponse tokenResponse = updateTokenUsecase.upsertToken(principal.getUserId());
+    return NetflixApiResponse.ok(tokenResponse);
+  }
+
+  @PostMapping("/reissue")
+  public NetflixApiResponse<TokenResponse> reissue(HttpServletRequest request) {
+    String accessToken = request.getHeader("token");
+    String refreshToken = request.getHeader("refresh_token");
+    if (StringUtils.isBlank(accessToken) || StringUtils.isBlank(refreshToken)) {
+      return NetflixApiResponse.fail(ErrorCode.DEFAULT_ERROR, "토큰이 없습니다.");
+    }
+
+    return NetflixApiResponse.ok(updateTokenUsecase.reissueToken(accessToken, refreshToken));
   }
 
   @PostMapping("/api/v1/user/callback")
-  public NetflixApiResponse<String> kakaoCallback(@RequestBody Map<String, String> request) {
+  public NetflixApiResponse<TokenResponse> kakaoCallback(@RequestBody Map<String, String> request) {
     String code = request.get("code");
 
     String accessTokenFromKakao = fetchTokenUsecase.getTokenFromKakao(code);
