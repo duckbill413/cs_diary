@@ -1,13 +1,17 @@
 package wh.duckbill.netflix.movie;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import wh.duckbill.netflix.movie.response.MovieResponse;
 import wh.duckbill.netflix.movie.response.PageableMovies;
 
+import java.util.List;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
-public class MovieService implements FetchMovieUsecase {
+public class MovieService implements FetchMovieUsecase, InsertMovieUsecase {
     private final TmdbMoviePort tmdbMoviePort;
 
     @Override
@@ -25,5 +29,10 @@ public class MovieService implements FetchMovieUsecase {
                 tmdbPageableMovies.getPage(),
                 tmdbPageableMovies.isHasNext()
         );
+    }
+
+    @Override
+    public void insert(List<MovieResponse> items) {
+        log.info("[{}] {}", items.size(), items.get(0).getMovieName());
     }
 }
