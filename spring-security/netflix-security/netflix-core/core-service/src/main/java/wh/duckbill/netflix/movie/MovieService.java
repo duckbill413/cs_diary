@@ -13,6 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MovieService implements FetchMovieUsecase, InsertMovieUsecase {
     private final TmdbMoviePort tmdbMoviePort;
+    private final PersistenceMoviePort persistenceMoviePort;
 
     @Override
     public PageableMovies fetchFromClient(int page) {
@@ -33,6 +34,14 @@ public class MovieService implements FetchMovieUsecase, InsertMovieUsecase {
 
     @Override
     public void insert(List<MovieResponse> items) {
-        log.info("[{}] {}", items.size(), items.get(0).getMovieName());
+        items.forEach(it -> persistenceMoviePort.insert(
+            NetflixMovie.builder()
+                .movieName(it.getMovieName())
+                .isAdult(it.getIsAdult())
+                .genre("")
+                .overview(it.getOverview())
+                .releaseAt(it.getReleaseAt())
+                .build()
+        ));
     }
 }
