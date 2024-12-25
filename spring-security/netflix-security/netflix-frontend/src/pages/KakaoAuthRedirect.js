@@ -15,7 +15,7 @@ function KakaoAuthRedirect() {
         .then(response => {
           console.log(response)
           const token = response.data.data;  // 백엔드에서 받은 JWT 토큰
-          localStorage.setItem('token', token);  // 토큰을 localStorage에 저장
+          localStorage.setItem('token', token.accessToken);  // 토큰을 localStorage에 저장
           navigate('/dashboard');  // 로그인 후 대시보드로 리디렉션
         })
         .catch(error => {

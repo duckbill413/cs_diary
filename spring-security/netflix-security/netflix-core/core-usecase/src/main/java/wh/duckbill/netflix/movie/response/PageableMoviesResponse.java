@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class PageableMovies {
+public class PageableMoviesResponse {
     private final List<MovieResponse> movieResponses;
     private final int page;
     private final boolean hasNext;

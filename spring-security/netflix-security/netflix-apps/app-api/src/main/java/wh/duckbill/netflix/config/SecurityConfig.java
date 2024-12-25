@@ -10,8 +10,10 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
+import wh.duckbill.netflix.filter.JwtAuthenticationFilter;
 import wh.duckbill.netflix.security.NetflixUserDetailsService;
 
 import java.util.Collections;
@@ -22,6 +24,7 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class SecurityConfig {
   private final NetflixUserDetailsService netflixUserDetailsService;
+  private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,6 +44,8 @@ public class SecurityConfig {
 
     http.oauth2Login(oauth2 ->
         oauth2.failureUrl("/login?error=true"));
+
+    http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
     return http.build();
   }

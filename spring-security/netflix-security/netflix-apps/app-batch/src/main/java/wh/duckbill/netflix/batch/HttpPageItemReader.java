@@ -3,7 +3,7 @@ package wh.duckbill.netflix.batch;
 import org.springframework.batch.item.support.AbstractItemCountingItemStreamItemReader;
 import wh.duckbill.netflix.movie.FetchMovieUsecase;
 import wh.duckbill.netflix.movie.response.MovieResponse;
-import wh.duckbill.netflix.movie.response.PageableMovies;
+import wh.duckbill.netflix.movie.response.PageableMoviesResponse;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -33,8 +33,8 @@ public class HttpPageItemReader extends AbstractItemCountingItemStreamItemReader
   }
 
   private void readRow() {
-    PageableMovies pageableMovies = fetchMovieUsecase.fetchFromClient(page);
-    contents.addAll(pageableMovies.getMovieResponses());
+    PageableMoviesResponse pageableMoviesResponse = fetchMovieUsecase.fetchFromClient(page);
+    contents.addAll(pageableMoviesResponse.getMovieResponses());
     page++;
   }
 
