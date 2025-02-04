@@ -43,6 +43,7 @@ public class UserService implements FetchUserUsecase, RegisterUserUsecase {
             .providerId(it.getProviderId())
             .provider(it.getProvider())
             .username(it.getUsername())
+            .role(it.getRole())
             .build())
         .orElse(null);
   }

@@ -20,7 +20,7 @@ public class JwtTokenProvider {
 
   public Authentication getAuthentication(String accessToken) {
     UserResponse user = fetchTokenUsecase.findUserByAccessToken(accessToken);
-    List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("abcd")); // TODO
+    List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.getRole()));
     UserDetails principal = new User(
         user.getUsername(),
         StringUtils.isBlank(user.getPassword()) ? "password" : user.getPassword(),
