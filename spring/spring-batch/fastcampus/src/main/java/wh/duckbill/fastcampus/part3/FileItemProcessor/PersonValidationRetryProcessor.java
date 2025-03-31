@@ -1,6 +1,5 @@
 package wh.duckbill.fastcampus.part3.FileItemProcessor;
 
-import com.example.batch.part3.Person;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.retry.RetryCallback;
@@ -8,6 +7,7 @@ import org.springframework.retry.RetryContext;
 import org.springframework.retry.RetryListener;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.retry.support.RetryTemplateBuilder;
+import wh.duckbill.fastcampus.part3.Person;
 
 /**
  * author        : duckbill413

@@ -1,13 +1,13 @@
 package wh.duckbill.fastcampus.part4.batch;
 
-import com.example.batch.part4.model.Users;
-import com.example.batch.part4.model.UsersRepository;
-import com.example.batch.part5.Orders;
 import lombok.RequiredArgsConstructor;
 import org.springframework.batch.core.StepContribution;
 import org.springframework.batch.core.scope.context.ChunkContext;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.repeat.RepeatStatus;
+import wh.duckbill.fastcampus.part4.model.Users;
+import wh.duckbill.fastcampus.part4.model.UsersRepository;
+import wh.duckbill.fastcampus.part5.Orders;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

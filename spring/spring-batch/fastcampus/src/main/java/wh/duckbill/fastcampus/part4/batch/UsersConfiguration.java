@@ -1,9 +1,5 @@
 package wh.duckbill.fastcampus.part4.batch;
 
-import com.example.batch.part4.model.Users;
-import com.example.batch.part4.model.UsersRepository;
-import com.example.batch.part5.JobParametersDecide;
-import com.example.batch.part5.OrderStatistics;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -26,6 +22,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.FileSystemResource;
+import wh.duckbill.fastcampus.part4.model.Users;
+import wh.duckbill.fastcampus.part4.model.UsersRepository;
+import wh.duckbill.fastcampus.part5.JobParametersDecide;
+import wh.duckbill.fastcampus.part5.OrderStatistics;
 
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;

@@ -6,8 +6,8 @@ package wh.duckbill.fastcampus.part4.model;
  * description   :
  **/
 
-import com.example.batch.part5.Orders;
 import lombok.*;
+import wh.duckbill.fastcampus.part5.Orders;
 
 import javax.persistence.*;
 import java.time.LocalDate;

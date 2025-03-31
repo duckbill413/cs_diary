@@ -1,6 +1,5 @@
 package wh.duckbill.fastcampus.part3.FileItemReader;
 
-import com.example.batch.part3.Person;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -13,6 +12,7 @@ import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import wh.duckbill.fastcampus.part3.Person;
 
 import javax.sql.DataSource;
 import java.util.stream.Collectors;

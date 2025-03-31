@@ -1,8 +1,8 @@
 package wh.duckbill.fastcampus.part6;
 
-import com.example.batch.part4.model.UsersRepository;
 import org.springframework.batch.core.partition.support.Partitioner;
 import org.springframework.batch.item.ExecutionContext;
+import wh.duckbill.fastcampus.part4.model.UsersRepository;
 
 import java.util.HashMap;
 import java.util.Map;

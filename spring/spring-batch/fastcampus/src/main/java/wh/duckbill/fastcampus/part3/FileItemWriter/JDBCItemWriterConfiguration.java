@@ -1,7 +1,5 @@
 package wh.duckbill.fastcampus.part3.FileItemWriter;
 
-import com.example.batch.part3.FileItemReader.CustomItemReader;
-import com.example.batch.part3.Person;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.batch.core.Job;
@@ -16,6 +14,8 @@ import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import wh.duckbill.fastcampus.part3.FileItemReader.CustomItemReader;
+import wh.duckbill.fastcampus.part3.Person;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;

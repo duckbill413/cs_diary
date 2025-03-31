@@ -58,7 +58,7 @@ public class TaskStepScopeProcessingConfiguration {
             StepExecution stepExecution = contribution.getStepExecution();
 
             int chunkSize = StringUtils.isNotEmpty(value) ? Integer.parseInt(value) : 10;
-            int fromIndex = stepExecution.getReadCount();
+            int fromIndex = (int) stepExecution.getReadCount();
             int toIndex = fromIndex + chunkSize;
             if (toIndex > items.size())
                 toIndex = items.size();

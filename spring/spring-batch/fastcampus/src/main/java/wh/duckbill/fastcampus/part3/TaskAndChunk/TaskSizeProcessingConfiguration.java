@@ -52,7 +52,7 @@ public class TaskSizeProcessingConfiguration {
             StepExecution stepExecution = contribution.getStepExecution();
 
             int chunkSize = 10;
-            int fromIndex = stepExecution.getReadCount();
+            int fromIndex = (int) stepExecution.getReadCount();
             int toIndex = fromIndex + chunkSize;
             if (toIndex > items.size())
                 toIndex = items.size();
