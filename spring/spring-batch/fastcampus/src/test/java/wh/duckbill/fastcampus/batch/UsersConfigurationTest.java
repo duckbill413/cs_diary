@@ -1,7 +1,5 @@
 package wh.duckbill.fastcampus.batch;
 
-import com.example.batch.TestConfiguration;
-import com.example.batch.part4.model.UsersRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.batch.core.JobExecution;
@@ -10,7 +8,9 @@ import org.springframework.batch.test.JobLauncherTestUtils;
 import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import wh.duckbill.fastcampus.TestConfiguration;
 import wh.duckbill.fastcampus.part4.batch.UsersConfiguration;
+import wh.duckbill.fastcampus.part4.model.UsersRepository;
 
 import java.time.LocalDate;
 

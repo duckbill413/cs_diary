@@ -1,7 +1,5 @@
 package wh.duckbill.fastcampus.FileItemProcessor;
 
-import com.example.batch.TestConfiguration;
-import com.example.batch.part3.PersonRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.After;
 import org.junit.Test;
@@ -15,7 +13,9 @@ import org.springframework.batch.test.context.SpringBatchTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
+import wh.duckbill.fastcampus.TestConfiguration;
 import wh.duckbill.fastcampus.part3.FileItemProcessor.SavePersonConfiguration;
+import wh.duckbill.fastcampus.part3.PersonRepository;
 
 @SpringBatchTest
 @RunWith(SpringRunner.class)

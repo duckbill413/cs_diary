@@ -19,7 +19,6 @@ import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
-import org.springframework.batch.item.support.CompositeItemProcessor;
 import org.springframework.batch.item.support.CompositeItemWriter;
 import org.springframework.batch.item.support.builder.CompositeItemProcessorBuilder;
 import org.springframework.batch.item.support.builder.CompositeItemWriterBuilder;
@@ -78,11 +77,9 @@ public class SavePersonConfiguration {
             throw new NotFoundNameException();
         };
 
-        CompositeItemProcessor<Person, Person> compositeItemProcessor = new CompositeItemProcessorBuilder()
-                .delegates(new PersonValidationRetryProcessor(), validationProcessor, personDuplicateValidationProcessor)
-                .build();
-        compositeItemProcessor.afterPropertiesSet();
-        return compositeItemProcessor;
+        return new CompositeItemProcessorBuilder<Person, Person>()
+            .delegates(new PersonValidationRetryProcessor(), validationProcessor, personDuplicateValidationProcessor)
+            .build();
     }
 
     public CompositeItemWriter<Person> compositeItemWriter() throws Exception {
